@@ -1,0 +1,48 @@
+name: "Dioxus Deploy"
+description: "Deploy dioxus-web app "
+icon: "book"
+color: "blue"
+
+inputs:
+  buildMode:
+    description: "Build projects using different modes [default: 'release']"
+    required: true
+    default: "release"
+  toolchain:
+    description: "Build projects using a different rust toolchain [default: 'stable']"
+    required: true
+    default: "stable"
+  outDirectory:
+    description: "The `out_dir` property configured in Dioxus.toml [default: 'dist']"
+    required: true
+    default: "dist"
+  rootPath:
+    description: "Source code root path [default: '.']"
+    required: true
+    default: "."
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - uses: actions-rs/toolchain@v1.0.6
+      with:
+        toolchain: ${{ inputs.toolchain }}
+        profile: minimal
+        target: wasm32-unknown-unknown
+        override: true
+    - uses: Swatinem/rust-cache@v2
+    - name: Install Dioxus-CLI
+      shell: bash
+      run: cargo install dioxus-cli
+
+    - name: Build Project 🎁
+      shell: bash
+      run: cd ${{ inputs.rootPath }} && dx build --${{ inputs.buildMode }} && cp ./${{ inputs.outDirectory }}/index.html ./${{ inputs.outDirectory }}/404.html
+
+    - name: Deploy Project 🚀
+      uses: JamesIves/github-pages-deploy-action@v4.4.1
+      with:
+        branch: gh-pages
+        folder: ${{ inputs.rootPath }}/${{ inputs.outDirectory }}
+        clean: false
