@@ -1,48 +1,63 @@
 name: "Dioxus Deploy"
-description: "Deploy dioxus-web app "
+description: "Deploy a Dioxus web application to GitHub Pages."
 icon: "book"
 color: "blue"
 
 inputs:
-  buildMode:
-    description: "Build projects using different modes [default: 'release']"
-    required: true
+  build-mode:
+    description: "Build mode for the project [default: 'release']"
+    required: false
     default: "release"
   toolchain:
-    description: "Build projects using a different rust toolchain [default: 'stable']"
-    required: true
+    description: "Rust toolchain to use for building [default: 'stable']"
+    required: false
     default: "stable"
-  outDirectory:
+  out-directory:
     description: "The `out_dir` property configured in Dioxus.toml [default: 'dist']"
-    required: true
+    required: false
     default: "dist"
-  rootPath:
+  root-path:
     description: "Source code root path [default: '.']"
-    required: true
+    required: false
     default: "."
 
 runs:
   using: "composite"
   steps:
+    # Checkout the repository
     - uses: actions/checkout@v3
-    - uses: actions-rs/toolchain@v1.0.6
+
+    # Set up the Rust toolchain
+    - uses: actions-rs/toolchain@v1
       with:
         toolchain: ${{ inputs.toolchain }}
         profile: minimal
         target: wasm32-unknown-unknown
         override: true
-    - uses: Swatinem/rust-cache@v2
-    - name: Install Dioxus-CLI
-      shell: bash
-      run: cargo install dioxus-cli
 
+    # Cache Rust dependencies to speed up builds
+    - uses: Swatinem/rust-cache@v2
+
+    # Install Dioxus CLI
+    - name: Install Dioxus CLI
+      shell: bash
+      run: |
+        set -euo pipefail
+        cargo install dioxus-cli --locked
+
+    # Build the Dioxus project
     - name: Build Project 🎁
       shell: bash
-      run: cd ${{ inputs.rootPath }} && dx build --${{ inputs.buildMode }} && cp ./${{ inputs.outDirectory }}/index.html ./${{ inputs.outDirectory }}/404.html
+      run: |
+        set -euo pipefail
+        cd "${{ inputs.root-path }}"
+        dx build --${{ inputs.build-mode }}
+        cp "./${{ inputs.out-directory }}/index.html" "./${{ inputs.out-directory }}/404.html"
 
+    # Deploy to GitHub Pages
     - name: Deploy Project 🚀
-      uses: JamesIves/github-pages-deploy-action@v4.4.1
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
         branch: gh-pages
-        folder: ${{ inputs.rootPath }}/${{ inputs.outDirectory }}
+        folder: "${{ inputs.root-path }}/${{ inputs.out-directory }}"
         clean: false
