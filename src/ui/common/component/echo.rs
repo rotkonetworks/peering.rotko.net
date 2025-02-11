@@ -13,7 +13,7 @@ pub fn Echo() -> Element {
             id: "echo",
             h4 { "ServerFn Echo" }
             input {
-                placeholder: "Type here to echo...",
+                placeholder: "Type here to echo anything...",
                 oninput:  move |event| async move {
                     let data = echo_server(event.value()).await.unwrap();
                     response.set(data);
