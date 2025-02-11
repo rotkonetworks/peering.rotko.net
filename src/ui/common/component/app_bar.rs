@@ -1,15 +1,15 @@
-use crate::Route;
 use dioxus::prelude::*;
+use crate::ui::app::app::Route;
 
-const NAVBAR_CSS: Asset = asset!("/assets/styling/navbar.css");
+const APPBAR_CSS: Asset = asset!("/assets/styling/appbar.css");
 
 #[component]
-pub fn Navbar() -> Element {
+pub fn AppBar() -> Element {
     rsx! {
-        document::Link { rel: "stylesheet", href: NAVBAR_CSS }
+        document::Link { rel: "stylesheet", href: APPBAR_CSS }
 
         div {
-            id: "navbar",
+            id: "appbar",
             Link {
                 to: Route::Home {},
                 "Home"

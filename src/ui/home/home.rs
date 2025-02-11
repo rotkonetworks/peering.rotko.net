@@ -1,4 +1,5 @@
-use crate::components::{Echo, Hero};
+use crate::ui::common::component::echo::Echo;
+use crate::ui::common::component::hero::Hero;
 use dioxus::prelude::*;
 
 #[component]
