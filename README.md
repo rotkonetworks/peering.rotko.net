@@ -6,9 +6,11 @@ Frontend project of a web app with information about Rotko Network peering.
 
 ### Tailwind
 
-Install npm: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+Install npm:
 
-Install the Tailwind CSS CLI: https://tailwindcss.com/docs/installation
+https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+
+Install the Tailwind CSS CLI:
 
 ```bash
 npm install tailwindcss @tailwindcss/cli
