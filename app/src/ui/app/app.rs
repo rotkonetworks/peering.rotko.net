@@ -43,7 +43,6 @@ pub fn Navigation() -> Element {
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 pub enum Route {
-    #[layout(Navigation)]
     #[route("/")]
     Home {},
     #[route("/login")]
