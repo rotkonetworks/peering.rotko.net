@@ -19,7 +19,7 @@ npm install tailwindcss @tailwindcss/cli
 Run the following command in the root of the project to start the Tailwind CSS compiler:
 
 ```bash
-npx tailwindcss -i ./input.css -o ./assets/tailwind.css --watch
+npx tailwindcss -i ./input.css -o ./resources/style/output.css --watch
 ```
 
 ### Dioxus CLI
