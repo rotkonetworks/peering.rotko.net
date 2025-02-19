@@ -8,10 +8,20 @@ edition = "2021"
 
 [dependencies]
 ui = { path = "../ui" }
-dioxus = { version = "0.6.0", features = ["router", "fullstack"] }
+dioxus = { version = "0.6.3", features = ["router", "fullstack"] }
 manganis = "0.6.2"
 console = "0.15.10"
-
+sha2 = "0.10"
+base64 = "0.22.1"
+web-sys = { version = "0.3", features = ["Window", "Storage"] }
+url = "2.5.4"
+reqwest = { version = "0.12.12", features = ["json"] }
+serde = { version = "1.0.217", features = ["derive"] }
+# Careful if using rand, and rand_chacha. Later versions of it create dependency conflict with vesion 0.6 of Dioxus
+#rand = "0.6"
+#rand_chacha = "0.3"
+# The crate wasm-bindgen is panicking in platform 'web'
+#wasm-bindgen = "0.2"
 
 [features]
 default = []

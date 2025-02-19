@@ -6,7 +6,7 @@ name = "peering-rotko-net"
 [web.app]
 
 # HTML title tag content
-title = "peering-rotko-net"
+title = "Peering - Rotko Networks"
 
 # include `resources` in web platform
 [web.resource]
