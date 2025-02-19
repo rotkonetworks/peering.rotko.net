@@ -1,8 +1,33 @@
+use crate::data::create_credentials_repository;
+use crate::ui::app::app::Route;
+use dioxus::html::completions::CompleteWithBraces::code;
 use dioxus::prelude::*;
 use ui::design::reference;
 
+#[derive(Clone, PartialEq)]
+enum HomeState {
+    None,
+    Authenticated,
+    Error,
+}
+
 #[component]
-pub fn Home() -> Element {
+pub fn HomeScreen() -> Element {
+    let home_state = use_resource({
+        move || async move {
+            let credentials_repository = create_credentials_repository();
+
+            let access_token = credentials_repository.get_access_token();
+            if access_token.is_none() {
+                let navigator = navigator();
+                navigator.replace("/login");
+                HomeState::None
+            } else {
+                HomeState::Authenticated
+            }
+        }
+    });
+
     rsx! {
         Hero {}
         Echo {}

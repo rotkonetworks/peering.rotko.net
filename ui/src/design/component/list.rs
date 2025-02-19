@@ -6,6 +6,9 @@ pub struct ListItemProps {
     /// Primary label for the list item.
     label: String,
 
+    #[props(optional)]
+    is_enabled: Option<bool>,
+
     /// Optional leading icon.
     #[props(optional)]
     icon: Option<Icon>,
@@ -39,9 +42,18 @@ pub struct ListItemProps {
 pub fn ListItem(props: ListItemProps) -> Element {
     let class = props.class.clone().unwrap_or_else(|| "dxa-list-item".into());
 
+    let is_enabled = props.is_enabled.unwrap_or(true); // Default to true
+
+    let mut modifier = "flex items-center justify-between p-4".to_string();
+    if is_enabled {
+        modifier.push_str(" hover:bg-gray-200 active:bg-gray-300 cursor-pointer");
+    } else {
+        modifier.push_str(" opacity-50 cursor-not-allowed pointer-events-none");
+    }
+
     rsx! {
         div {
-            class: "{class} flex items-center justify-between p-4 hover:bg-gray-200 active:bg-gray-300 cursor-pointer",
+            class: "{class} {modifier}",
             onclick: move |e| props.on_click.call(e),
             onmouseenter: move |e| props.on_mouse_enter.call(e),
             onmouseleave: move |e| props.on_mouse_leave.call(e),
