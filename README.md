@@ -42,10 +42,10 @@ Run the following command in the root of the project to start the Tailwind CSS c
 npx tailwindcss -i ./input.css -o ./app/resources/style/tailwind.css --watch
 ```
 
-Run the following command in the root of your project to start developing with the default platform:
+Run the following command in the root of your project to start developing with the default platform (web):
 
 ```bash
 cd app
-dx serve --platform web
+dx serve
 ```
 To run for a different platform, use the `--platform platform` flag. E.g.: `desktop`.
