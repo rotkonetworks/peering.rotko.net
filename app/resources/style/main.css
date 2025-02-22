@@ -1,43 +1,5 @@
 body {
-    background-color: #0f1116;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
-}
-
-#hero {
-    margin: 0;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-#links {
-    width: 400px;
-    text-align: left;
-    font-size: x-large;
-    color: white;
-    display: flex;
-    flex-direction: column;
-}
-
-#links a {
-    color: white;
-    text-decoration: none;
-    margin-top: 20px;
-    margin: 10px 0px;
-    border: white 1px solid;
-    border-radius: 5px;
-    padding: 10px;
-}
-
-#links a:hover {
-    background-color: #1f1f1f;
-    cursor: pointer;
-}
-
-#header {
-    max-width: 1200px;
 }
 
 #echo {
@@ -45,9 +7,7 @@ body {
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
-    background-color: #1e222d;
     padding: 20px;
-    color: #ffffff;
     border-radius: 10px;
 }
 
@@ -57,9 +17,8 @@ body {
 
 #echo>input {
     border: none;
-    border-bottom: 1px white solid;
+    border-bottom: 1px black solid;
     background-color: transparent;
-    color: #ffffff;
     transition: border-bottom-color 0.2s ease;
     outline: none;
     display: block;
@@ -73,22 +32,4 @@ body {
 
 #echo>p {
     margin: 20px 0px 0px auto;
-}
-
-#appbar {
-    display: flex;
-    flex-direction: row;
-    color: #ffffff;
-}
-
-#appbar a {
-    color: #ffffff;
-    margin-right: 20px;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-#appbar a:hover {
-    cursor: pointer;
-    color: #91a4d2;
 }

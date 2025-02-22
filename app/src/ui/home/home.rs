@@ -1,47 +1,125 @@
-use crate::data::create_credentials_repository;
+use crate::data::profile::Profile;
+use crate::data::{create_credentials_repository, create_profile_repository};
 use crate::ui::app::app::Route;
 use dioxus::html::completions::CompleteWithBraces::code;
 use dioxus::prelude::*;
+use std::ops::Deref;
+use ui::design::component::image::Image;
+use ui::design::component::text::Text;
 use ui::design::reference;
+use ui::foundation::column::Column;
+use ui::foundation::HorizontalAlignment;
 
 #[derive(Clone, PartialEq)]
 enum HomeState {
-    None,
-    Authenticated,
+    Loading,
+    Success(Profile),
     Error,
 }
 
+/// Main screen of the app.
+///
+/// It shows information about Rotko Networks and the user's networks.
 #[component]
 pub fn HomeScreen() -> Element {
     let home_state = use_resource({
         move || async move {
             let credentials_repository = create_credentials_repository();
 
-            let access_token = credentials_repository.get_access_token();
-            if access_token.is_none() {
-                let navigator = navigator();
-                navigator.replace("/login");
-                HomeState::None
-            } else {
-                HomeState::Authenticated
+            if let Some(access_token) = credentials_repository.get_access_token() {
+                let profile_repository = create_profile_repository(access_token);
+
+                match profile_repository.get().await {
+                    Ok(profile) => return HomeState::Success(profile),
+                    Err(_) => {}
+                }
             }
+
+            let navigator = navigator();
+            navigator.replace("/login");
+            HomeState::Loading
+
+            // TODO Fake
+            // HomeState::Success(Profile {
+            //     id: 1,
+            //     name: "Michael Kayne".to_string(),
+            //     given_name: "".to_string(),
+            //     family_name: "".to_string(),
+            //     email: "mock@example.com".to_string(),
+            //     verified_user: false,
+            //     verified_email: false,
+            //     networks: vec![],
+            // })
         }
     });
 
     rsx! {
-        Hero {}
-        Echo {}
+
+        match home_state.read().deref() {
+            Some(HomeState::Success(profile)) => {
+                rsx! { Success { user_name: profile.name.clone() } }
+            },
+            _ => {
+                let message = match home_state.read().deref() {
+                    Some(HomeState::Error) => "Ops.. Something went wrong.".to_string(),
+                    _ => "Loading...".to_string(),
+                };
+                rsx! { State { message } }
+            }
+        }
+
+        // Echo {}
+    }
+}
+
+/// Component to show the state loading and error
+#[component]
+fn State(message: String) -> Element {
+    rsx! {
+       div {
+            class: "flex flex-col items-center justify-center h-screen bg-gray-200",
+
+            Image {
+               class: "mb-2 filter grayscale brightness-90 contrast-125",
+               src: reference::image::LOGO,
+               width: 64,
+               height: 64
+            }
+
+            Text {
+               class: "text-gray-400 italic",
+               text: "Rotko Networks"
+            }
+
+            Text {
+               class: "p-4 font-semibold",
+               text: message
+            }
+        }
     }
 }
 
 #[component]
-pub fn Hero() -> Element {
+fn Success(user_name: String) -> Element {
     rsx! {
-        div {
-            id: "hero",
-            img { src: reference::image::HEADER, id: "header" }
-            div { id: "links",
-                a { href: "https://dioxuslabs.com/learn/0.6/", "📚 Learn Dioxus" }
+       div {
+            class: "flex flex-col items-center justify-center h-screen bg-gray-200",
+
+            Image {
+               class: "mb-2 filter grayscale brightness-90 contrast-125",
+               src: reference::image::LOGO,
+               width: 64,
+               height: 64
+            }
+
+            Text {
+               class: "text-gray-400 italic",
+               text: "Rotko Networks"
+            }
+
+            Text {
+               class: "p-4 font-semibold",
+               text: format!("Welcome, {user_name}")
             }
         }
     }
@@ -49,7 +127,7 @@ pub fn Hero() -> Element {
 
 /// Echo component that demonstrates fullstack server functions.
 #[component]
-pub fn Echo() -> Element {
+fn Echo() -> Element {
     let mut response = use_signal(|| String::new());
 
     rsx! {
