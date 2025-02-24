@@ -32,4 +32,8 @@ impl CredentialsRepository {
     pub fn set_access_token(&self, value: &str) {
         let _ = self.local_data_source.set_access_token(value);
     }
+
+    pub fn delete_access_token(&self) {
+        let _ = self.local_data_source.delete_access_token();
+    }
 }
