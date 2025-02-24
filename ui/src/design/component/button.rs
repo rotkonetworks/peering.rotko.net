@@ -70,7 +70,7 @@ pub fn Button(props: ButtonProps) -> Element {
 
     rsx! {
         button {
-            class: "{props.class} bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700",
+            class: "{props.class} px-4 py-2 rounded-lg hover:bg-gray-200",
             // Events
             onclick: on_click,
             onmouseenter: on_mouse_enter,
@@ -90,6 +90,57 @@ pub fn Button(props: ButtonProps) -> Element {
              } else {
                 "{props.label}"
             },
+        }
+    }
+}
+
+use dioxus::prelude::*;
+
+#[derive(Props, Clone, PartialEq)]
+pub struct IconButtonProps {
+    #[props(optional, default = "dxa-icon-button".into())]
+    class: String,
+
+    icon: Icon,
+
+    #[props(optional)]
+    on_click: EventHandler<MouseEvent>,
+
+    #[props(optional)]
+    on_mouse_enter: EventHandler<MouseEvent>,
+
+    #[props(optional)]
+    on_mouse_leave: EventHandler<MouseEvent>,
+
+    #[props(optional)]
+    on_focus: EventHandler<FocusEvent>,
+
+    #[props(optional)]
+    aria_label: Option<String>,
+}
+
+#[component]
+pub fn IconButton(props: IconButtonProps) -> Element {
+
+    let aria_label = props.aria_label.clone().unwrap_or_else(|| "icon button".into());
+
+    rsx! {
+        button {
+            class: "{props.class} w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 active:bg-gray-300 cursor-pointer",
+            // Events
+            onclick: move |e| props.on_click.call(e),
+            onmouseenter: move |e| props.on_mouse_enter.call(e),
+            onmouseleave: move |e| props.on_mouse_leave.call(e),
+            onfocus: move |e| props.on_focus.call(e),
+            // Aria
+            aria_label: "{aria_label}",
+            title: "{aria_label}", // Display the label on hover as a tooltip
+
+            img {
+                src: props.icon.src,
+                width: "{props.icon.width}",
+                height: "{props.icon.height}",
+            }
         }
     }
 }

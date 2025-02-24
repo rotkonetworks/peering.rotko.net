@@ -40,4 +40,8 @@ impl CredentialsDataSource {
     pub fn set_access_token(&self, value: &str) {
         let _ = self.storage.set_item(ACCESS_TOKEN_KEY, value);
     }
+
+    pub fn delete_access_token(&self) {
+        let _ = self.storage.remove_item(ACCESS_TOKEN_KEY);
+    }
 }

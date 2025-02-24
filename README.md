@@ -49,3 +49,17 @@ cd app
 dx serve
 ```
 To run for a different platform, use the `--platform platform` flag. E.g.: `desktop`.
+
+## Build
+
+To build, run:
+
+```bash
+dioxus build --release
+```
+
+This will create the files to target folder:
+
+``
+target/dx/peering-rotko-net/release/web/public"
+``
