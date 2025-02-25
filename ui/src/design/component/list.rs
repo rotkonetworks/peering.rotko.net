@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use crate::design::component::icon::Icon;
+use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
 pub struct ListItemProps {
@@ -13,9 +13,8 @@ pub struct ListItemProps {
     #[props(optional)]
     icon: Option<Icon>,
 
-    /// Optional trailing icon.
     #[props(optional)]
-    trailing_icon: Option<Icon>,
+    trailing_content: Option<Element>,
 
     /// Optional CSS class for custom styling.
     #[props(optional)]
@@ -40,7 +39,10 @@ pub struct ListItemProps {
 
 #[component]
 pub fn ListItem(props: ListItemProps) -> Element {
-    let class = props.class.clone().unwrap_or_else(|| "dxa-list-item".into());
+    let class = props
+        .class
+        .clone()
+        .unwrap_or_else(|| "dxa-list-item".into());
 
     let is_enabled = props.is_enabled.unwrap_or(true); // Default to true
 
@@ -74,14 +76,9 @@ pub fn ListItem(props: ListItemProps) -> Element {
                 span { class: "select-none", "{props.label}" }
             }
 
-            // Trailing icon
-            if let Some(trailing) = props.trailing_icon {
-                img {
-                    src: "{trailing.src}",
-                    width: "{trailing.width}",
-                    height: "{trailing.height}",
-                    class: "ml-4 select-none",
-                }
+            // Trailing content
+            if let Some(trailing) = &props.trailing_content {
+                {trailing}
             }
         }
     }

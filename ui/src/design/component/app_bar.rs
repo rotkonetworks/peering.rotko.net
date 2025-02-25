@@ -1,6 +1,6 @@
-use dioxus::prelude::*;
 use crate::design::component::text::Text;
 use crate::foundation::row::Row;
+use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
 pub struct TopAppBarProps {

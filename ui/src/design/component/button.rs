@@ -1,12 +1,24 @@
-use dioxus::prelude::*;
 use crate::design::component::icon::Icon;
+use crate::design::component::image::Image;
+use crate::design::component::text::Text;
+use dioxus::prelude::*;
 
+/// Button properties.
 #[derive(Props, Clone, PartialEq)]
 pub struct ButtonProps {
     #[props(optional, default = "dxa-button".into())]
     class: String,
+
     label: String,
-    icon: Option<Icon>,
+
+    #[props(optional, default = "gray-700".into())]
+    color: String,
+
+    #[props(optional)]
+    leading_icon: Option<Icon>,
+
+    #[props(optional)]
+    trailing_icon: Option<Icon>,
 
     #[props(optional)]
     on_click: EventHandler<MouseEvent>,
@@ -27,8 +39,6 @@ pub struct ButtonProps {
 }
 
 /// The `Button` ARIA pattern.
-///
-///
 #[component]
 pub fn Button(props: ButtonProps) -> Element {
     let mut is_toggled = use_signal(|| false);
@@ -39,62 +49,49 @@ pub fn Button(props: ButtonProps) -> Element {
             let value = is_toggled();
             toggled_e.call(value);
         }
-
         props.on_click.call(data);
     };
 
-    let on_mouse_enter = move |data| props.on_mouse_enter.call(data);
-    let on_mouse_leave = move |data| props.on_mouse_leave.call(data);
-    let on_focus = move |data| props.on_focus.call(data);
-
-    let aria_pressed_val = match props.on_toggled.is_some() {
-        true => match is_toggled() {
-            true => Some("true"),
-            false => Some("false"),
-        },
-        false => None,
-    };
-
-    let toggled_val = match props.on_toggled.is_some() {
-        true => match is_toggled() {
-            true => Some("true"),
-            false => Some("false"),
-        },
-        false => None,
-    };
-
-    let aria_label_val = match props.icon.is_some() {
-        true => Some(props.label.clone()),
-        false => None,
-    };
+    let aria_pressed_val = props.on_toggled.is_some().then(|| is_toggled().to_string());
+    let aria_label_val = Some(props.label.clone());
 
     rsx! {
         button {
-            class: "{props.class} px-4 py-2 rounded-lg hover:bg-gray-200",
+        class: "{props.class} px-3 py-2 rounded-lg flex items-center gap-1 hover:bg-gray-200 active:bg-gray-300 cursor-pointer font-semibold",
             // Events
             onclick: on_click,
-            onmouseenter: on_mouse_enter,
-            onmouseleave: on_mouse_leave,
-            onfocus: on_focus,
+            onmouseenter: move |data| props.on_mouse_enter.call(data),
+            onmouseleave: move |data| props.on_mouse_leave.call(data),
+            onfocus: move |data| props.on_focus.call(data),
             // Aria
             aria_pressed: aria_pressed_val,
             aria_label: aria_label_val,
 
-            "toggled": toggled_val,
-            if let Some(icon) = props.icon {
-                img {
-                    src: icon.src,
-                    width: "{icon.width}",
-                    height: "{icon.height}",
-                 }
-             } else {
-                "{props.label}"
-            },
+            if let Some(leading_icon) = props.leading_icon {
+                Image {
+                    class: "fill-gray-600",
+                    src: leading_icon.src,
+                    width: leading_icon.width,
+                    height: leading_icon.height
+                }
+            }
+
+            Text {
+                class: "align-middle text-gray-600",
+                text: props.label
+            }
+
+            if let Some(trailing_icon) = props.trailing_icon {
+                Image {
+                    class: "fill-gray-600",
+                    src: trailing_icon.src,
+                    width: trailing_icon.width,
+                    height: trailing_icon.height
+                }
+            }
         }
     }
 }
-
-use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
 pub struct IconButtonProps {
@@ -121,8 +118,10 @@ pub struct IconButtonProps {
 
 #[component]
 pub fn IconButton(props: IconButtonProps) -> Element {
-
-    let aria_label = props.aria_label.clone().unwrap_or_else(|| "icon button".into());
+    let aria_label = props
+        .aria_label
+        .clone()
+        .unwrap_or_else(|| "icon button".into());
 
     rsx! {
         button {
@@ -136,10 +135,11 @@ pub fn IconButton(props: IconButtonProps) -> Element {
             aria_label: "{aria_label}",
             title: "{aria_label}", // Display the label on hover as a tooltip
 
-            img {
+            Image {
+                class: "fill-gray-600",
                 src: props.icon.src,
-                width: "{props.icon.width}",
-                height: "{props.icon.height}",
+                width: props.icon.width,
+                height: props.icon.height,
             }
         }
     }

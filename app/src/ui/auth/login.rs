@@ -10,9 +10,8 @@ use reqwest::Client;
 use std::fs::read_dir;
 use std::ops::{Deref, Not};
 use std::string::ToString;
-use ui::design::component::button::Button;
 use ui::design::component::icon::Icon;
-use ui::design::component::image::Image;
+use ui::design::component::image::{Image, ImageProps};
 use ui::design::component::list::ListItem;
 use ui::design::component::text::Text;
 use ui::design::reference;
@@ -151,11 +150,15 @@ pub fn LoginScreen(code: String, state: String) -> Element {
                        src: reference::icon::OIDC.to_string()
                    },
                    label: "PeeringDB",
-                   trailing_icon: Icon {
-                       width: 24,
-                       height: 24,
-                       src: reference::icon::CHEVRON_RIGHT.to_string()
-                   },
+                   trailing_content: Some(
+                        rsx!{
+                            Image {
+                                width: 24,
+                                height: 24,
+                                src: reference::icon::CHEVRON_RIGHT.to_string()
+                            }
+                        }
+                    ),
                    on_click: auth_with_peering_db
                }
             }
