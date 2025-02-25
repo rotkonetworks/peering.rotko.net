@@ -35,40 +35,40 @@ pub fn HomeScreen() -> Element {
                 let profile_repository = create_profile_repository(access_token);
 
                 // TODO Fake
-                return HomeState::Success(Profile {
-                    id: 1,
-                    name: "Michael Kayne".to_string(),
-                    given_name: "".to_string(),
-                    family_name: "".to_string(),
-                    email: "michael.kayne@example.com".to_string(),
-                    verified_user: false,
-                    verified_email: false,
-                    networks: vec![
-                        Network {
-                            perms: 3,
-                            asn: 65001,
-                            name: "AT&T".to_string(),
-                            id: 101,
-                        },
-                        Network {
-                            perms: 5,
-                            asn: 65002,
-                            name: "Verizon Communications".to_string(),
-                            id: 102,
-                        },
-                        Network {
-                            perms: 2,
-                            asn: 65003,
-                            name: "T-Mobile USA".to_string(),
-                            id: 103,
-                        },
-                    ],
-                });
+                // return HomeState::Success(Profile {
+                //     id: 1,
+                //     name: "Michael Kayne".to_string(),
+                //     given_name: "".to_string(),
+                //     family_name: "".to_string(),
+                //     email: "michael.kayne@example.com".to_string(),
+                //     verified_user: false,
+                //     verified_email: false,
+                //     networks: vec![
+                //         Network {
+                //             perms: 3,
+                //             asn: 65001,
+                //             name: "AT&T".to_string(),
+                //             id: 101,
+                //         },
+                //         Network {
+                //             perms: 5,
+                //             asn: 65002,
+                //             name: "Verizon Communications".to_string(),
+                //             id: 102,
+                //         },
+                //         Network {
+                //             perms: 2,
+                //             asn: 65003,
+                //             name: "T-Mobile USA".to_string(),
+                //             id: 103,
+                //         },
+                //     ],
+                // });
 
-                // match profile_repository.get().await {
-                //     Ok(profile) => return HomeState::Success(profile),
-                //     Err(_) => {}
-                // }
+                match profile_repository.get().await {
+                    Ok(profile) => return HomeState::Success(profile),
+                    Err(_) => {}
+                }
             }
 
             let navigator = navigator();
