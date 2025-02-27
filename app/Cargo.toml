@@ -22,6 +22,7 @@ serde = { version = "1.0.217", features = ["derive"] }
 #rand_chacha = "0.3"
 # The crate wasm-bindgen is panicking in platform 'web'
 #wasm-bindgen = "0.2"
+dioxus-material = "0.2.1"
 
 [features]
 default = []
