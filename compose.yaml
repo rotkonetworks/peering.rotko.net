@@ -1,0 +1,10 @@
+services:
+  peering-rotko-net:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8089:80"
+    restart: unless-stopped
+    environment:
+      - RUST_LOG=info
