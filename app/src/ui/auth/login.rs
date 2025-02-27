@@ -17,7 +17,7 @@ use ui::design::component::text::Text;
 use ui::design::reference;
 use ui::foundation::column::Column;
 use ui::foundation::row::Row;
-use ui::foundation::{HorizontalAlignment, VerticalArrangement};
+use ui::foundation::{Alignment, Arrangement};
 
 #[derive(Clone, PartialEq)]
 enum LoginState {
@@ -118,8 +118,8 @@ pub fn LoginScreen(code: String, state: String) -> Element {
 
             Column {
                class: "bg-white w-[480px] border border-gray-300 rounded-lg shadow-lg p-8",
-               horizontal_alignment: HorizontalAlignment::Center,
-               vertical_arrangement: VerticalArrangement::Center,
+               horizontal_alignment: Alignment::Center,
+               vertical_arrangement: Arrangement::Center,
 
                Text {
                    class: "text-gray-400 italic",

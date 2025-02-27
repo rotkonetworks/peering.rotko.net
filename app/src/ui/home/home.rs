@@ -3,7 +3,9 @@ use crate::data::{create_credentials_repository, create_profile_repository};
 use crate::ui::app::app::Route;
 use dioxus::html::completions::CompleteWithBraces::code;
 use dioxus::prelude::*;
-use std::ops::Deref;
+use dioxus_charts::charts::pie::LabelPosition;
+use dioxus_charts::{BarChart, LineChart, PieChart};
+use std::ops::{Deref, Div};
 use ui::design::component::app_bar::TopAppBar;
 use ui::design::component::button::{Button, IconButton};
 use ui::design::component::grid::Grid;
@@ -15,7 +17,7 @@ use ui::design::component::text::Text;
 use ui::design::reference;
 use ui::foundation::column::Column;
 use ui::foundation::row::Row;
-use ui::foundation::{HorizontalAlignment, VerticalArrangement};
+use ui::foundation::{Alignment, Arrangement};
 
 #[derive(Clone, PartialEq)]
 enum HomeState {
@@ -231,8 +233,8 @@ fn Greeting(user_name: String) -> Element {
     rsx! {
         Column {
             class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-4",
-            horizontal_alignment: HorizontalAlignment::Center,
-            vertical_arrangement: VerticalArrangement::Center,
+            horizontal_alignment: Alignment::Center,
+            vertical_arrangement: Arrangement::Center,
 
             Image {
                class: "mb-2 filter grayscale brightness-90 contrast-125",
@@ -256,15 +258,84 @@ fn Greeting(user_name: String) -> Element {
 
 #[component]
 fn Traffic() -> Element {
+
+    let values: Vec<f32> = vec![10.0, 2.0];
+    let total: f32 = values.iter().sum();
+
+    let percentages: Vec<String> = values
+        .iter()
+        .map(|&v| format!("{:.1}%", (v / total) * 100.0))
+        .collect();
+
     rsx! {
         Column {
-            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-2",
-            horizontal_alignment: HorizontalAlignment::Start,
-            vertical_arrangement: VerticalArrangement::Start,
+            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-4",
+            horizontal_alignment: Alignment::Start,
+            vertical_arrangement: Arrangement::Start,
 
             Text {
-               class: "p-4 font-semibold",
+               class: "font-semibold",
                text: "Traffic"
+            }
+
+            div {
+                class: "relative flex items-center justify-center",
+
+                PieChart {
+                    width: "100%",
+                    height: "100%",
+                    start_angle: 50.0,
+                    label_offset: 27.0,
+                    label_position: LabelPosition::Outside,
+                    donut: true,
+                    donut_width: 30.0,
+                    padding: 20.0,
+                    series: values.clone(),
+                    labels: vec!["".into(), "".into()],
+                }
+
+                Text {
+                    class: "text-4xl text-gray-700 font-semibold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                    text: format!("{}k", total)
+                }
+            }
+
+            Row {
+                class: "flex w-full",
+                vertical_alignment: Alignment::Center,
+
+                div {
+                    class: "w-3 h-3 bg-red-500 rounded-sm m-1",
+                }
+
+                Text {
+                   class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
+                   text: "From Rotko"
+                }
+
+                 Text {
+                   class: "text-sm font-medium text-gray-700 py-2 mx-1",
+                   text: percentages.first().cloned().unwrap_or_else(|| "".into()),
+                 }
+            }
+
+             Row {
+                 class: "flex w-full",
+                 vertical_alignment: Alignment::Center,
+
+                 div {
+                    class: "w-3 h-3 bg-red-800 rounded-sm m-1",
+                 }
+
+                 Text {
+                   class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
+                   text: "To Rotko"
+                 }
+
+                 Text {
+                   class: "text-sm font-medium text-gray-700 py-2 mx-1",
+                   text: percentages.last().cloned().unwrap_or_else(|| "".into()),
+                 }
             }
         }
     }
@@ -274,12 +345,12 @@ fn Traffic() -> Element {
 fn Bandwidth() -> Element {
     rsx! {
         Column {
-            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-2",
-            horizontal_alignment: HorizontalAlignment::Start,
-            vertical_arrangement: VerticalArrangement::Start,
+            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-4",
+            horizontal_alignment: Alignment::Start,
+            vertical_arrangement: Arrangement::Start,
 
             Text {
-               class: "p-4 font-semibold",
+               class: "font-semibold",
                text: "Bandwidth"
             }
         }
@@ -290,12 +361,12 @@ fn Bandwidth() -> Element {
 fn Locations() -> Element {
     rsx! {
         Column {
-            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-2",
-            horizontal_alignment: HorizontalAlignment::Start,
-            vertical_arrangement: VerticalArrangement::Start,
+            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-4",
+            horizontal_alignment: Alignment::Start,
+            vertical_arrangement: Arrangement::Start,
 
             Text {
-               class: "p-4 font-semibold",
+               class: "font-semibold",
                text: "Locations"
             }
         }

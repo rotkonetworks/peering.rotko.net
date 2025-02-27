@@ -479,6 +479,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "dioxus-charts"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3c862cacf3989713716763def8a4b3b1ab366f691cac5bd64187aec7cb27e61f"
+dependencies = [
+ "dioxus 0.6.3",
+ "log",
+]
+
+[[package]]
 name = "dioxus-cli-config"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2114,6 +2124,7 @@ dependencies = [
  "base64",
  "console",
  "dioxus 0.6.3",
+ "dioxus-charts",
  "dioxus-material",
  "manganis",
  "reqwest",
@@ -3059,6 +3070,7 @@ version = "0.1.0"
 dependencies = [
  "console",
  "dioxus 0.6.3",
+ "dioxus-charts",
  "dioxus-material",
  "manganis",
  "web-sys",
