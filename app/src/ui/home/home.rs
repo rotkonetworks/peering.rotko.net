@@ -6,6 +6,7 @@ use dioxus::prelude::*;
 use std::ops::Deref;
 use ui::design::component::app_bar::TopAppBar;
 use ui::design::component::button::{Button, IconButton};
+use ui::design::component::grid::Grid;
 use ui::design::component::icon::Icon;
 use ui::design::component::image::Image;
 use ui::design::component::list::ListItem;
@@ -13,7 +14,8 @@ use ui::design::component::menu::Menu;
 use ui::design::component::text::Text;
 use ui::design::reference;
 use ui::foundation::column::Column;
-use ui::foundation::HorizontalAlignment;
+use ui::foundation::row::Row;
+use ui::foundation::{HorizontalAlignment, VerticalArrangement};
 
 #[derive(Clone, PartialEq)]
 enum HomeState {
@@ -35,40 +37,40 @@ pub fn HomeScreen() -> Element {
                 let profile_repository = create_profile_repository(access_token);
 
                 // TODO Fake
-                // return HomeState::Success(Profile {
-                //     id: 1,
-                //     name: "Michael Kayne".to_string(),
-                //     given_name: "".to_string(),
-                //     family_name: "".to_string(),
-                //     email: "michael.kayne@example.com".to_string(),
-                //     verified_user: false,
-                //     verified_email: false,
-                //     networks: vec![
-                //         Network {
-                //             perms: 3,
-                //             asn: 65001,
-                //             name: "AT&T".to_string(),
-                //             id: 101,
-                //         },
-                //         Network {
-                //             perms: 5,
-                //             asn: 65002,
-                //             name: "Verizon Communications".to_string(),
-                //             id: 102,
-                //         },
-                //         Network {
-                //             perms: 2,
-                //             asn: 65003,
-                //             name: "T-Mobile USA".to_string(),
-                //             id: 103,
-                //         },
-                //     ],
-                // });
+                return HomeState::Success(Profile {
+                    id: 1,
+                    name: "Michael Kayne".to_string(),
+                    given_name: "".to_string(),
+                    family_name: "".to_string(),
+                    email: "michael.kayne@example.com".to_string(),
+                    verified_user: false,
+                    verified_email: false,
+                    networks: vec![
+                        Network {
+                            perms: 3,
+                            asn: 65001,
+                            name: "AT&T".to_string(),
+                            id: 101,
+                        },
+                        Network {
+                            perms: 5,
+                            asn: 65002,
+                            name: "Verizon Communications".to_string(),
+                            id: 102,
+                        },
+                        Network {
+                            perms: 2,
+                            asn: 65003,
+                            name: "T-Mobile USA".to_string(),
+                            id: 103,
+                        },
+                    ],
+                });
 
-                match profile_repository.get().await {
-                    Ok(profile) => return HomeState::Success(profile),
-                    Err(_) => {}
-                }
+                // match profile_repository.get().await {
+                //     Ok(profile) => return HomeState::Success(profile),
+                //     Err(_) => {}
+                // }
             }
 
             let navigator = navigator();
@@ -131,10 +133,6 @@ fn Success(profile: Profile) -> Element {
 
     let mut menu_open = use_signal(|| false);
 
-    let toggle_menu = move |_| {
-        menu_open.set(!menu_open());
-    };
-
     let network_names: Vec<String> = profile
         .networks
         .iter()
@@ -158,26 +156,32 @@ fn Success(profile: Profile) -> Element {
                                     height: 24,
                                     src: reference::icon::CHEVRON_DOWN.to_string()
                                 },
-                                on_click: toggle_menu
+                                on_click: move |_| { menu_open.toggle() }
                             }
-                            Menu {
-                                is_open: menu_open(),
-                                align_right: true,
 
-                                for network in profile.networks.clone() {
-                                    ListItem {
-                                        label: &network.name,
-                                        trailing_content: Some(
-                                            rsx! {
-                                                input {
-                                                    class: "cursor-pointer",
-                                                    r#type: "radio",
-                                                    checked: network.asn == selected_network().unwrap().asn
+                            if menu_open(){
+                                Menu {
+                                    align_right: true,
+                                    on_dismiss: move |_| {
+                                        menu_open.set(false)
+                                    },
+
+                                    for network in profile.networks.clone() {
+                                        ListItem {
+                                            label: &network.name,
+                                            trailing_content: Some(
+                                                rsx! {
+                                                    input {
+                                                        class: "cursor-pointer",
+                                                        r#type: "radio",
+                                                        checked: network.asn == selected_network().unwrap().asn
+                                                    }
                                                 }
+                                            ),
+                                            on_click: move |_| {
+                                                selected_network.set(Some(network.clone()));
+                                                menu_open.set(false);
                                             }
-                                        ),
-                                        on_click: move |_| {
-                                            selected_network.set(Some(network.clone()));
                                         }
                                     }
                                 }
@@ -202,25 +206,97 @@ fn Success(profile: Profile) -> Element {
                 ),
             }
 
-            div {
-                class: "flex flex-col flex-1 items-center justify-center bg-gray-200",
+        div {
+            class: "flex flex-1 items-center justify-center bg-gray-200",
 
-                Image {
-                   class: "mb-2 filter grayscale brightness-90 contrast-125",
-                   src: reference::image::LOGO,
-                   width: 64,
-                   height: 64
-                }
+            Grid {
+                class: "grid grid-cols-3 gap-4 max-w-4xl mx-auto",
 
-                Text {
-                   class: "text-gray-400 italic",
-                   text: "Rotko Networks"
-                }
+                    Greeting { user_name: user_name }
 
-                Text {
-                   class: "p-4 font-semibold",
-                   text: format!("Welcome, {user_name}")
+                    Traffic {}
+
+                    Bandwidth {}
+
+                    Locations {}
+
                 }
+            }
+        }
+    }
+}
+
+#[component]
+fn Greeting(user_name: String) -> Element {
+    rsx! {
+        Column {
+            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-4",
+            horizontal_alignment: HorizontalAlignment::Center,
+            vertical_arrangement: VerticalArrangement::Center,
+
+            Image {
+               class: "mb-2 filter grayscale brightness-90 contrast-125",
+               src: reference::image::LOGO,
+               width: 64,
+               height: 64
+            }
+
+            Text {
+               class: "text-gray-400 italic",
+               text: "Rotko Networks"
+            }
+
+            Text {
+               class: "p-4 font-semibold",
+               text: format!("Welcome, {user_name}")
+            }
+        }
+    }
+}
+
+#[component]
+fn Traffic() -> Element {
+    rsx! {
+        Column {
+            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-2",
+            horizontal_alignment: HorizontalAlignment::Start,
+            vertical_arrangement: VerticalArrangement::Start,
+
+            Text {
+               class: "p-4 font-semibold",
+               text: "Traffic"
+            }
+        }
+    }
+}
+
+#[component]
+fn Bandwidth() -> Element {
+    rsx! {
+        Column {
+            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-2",
+            horizontal_alignment: HorizontalAlignment::Start,
+            vertical_arrangement: VerticalArrangement::Start,
+
+            Text {
+               class: "p-4 font-semibold",
+               text: "Bandwidth"
+            }
+        }
+    }
+}
+
+#[component]
+fn Locations() -> Element {
+    rsx! {
+        Column {
+            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-2",
+            horizontal_alignment: HorizontalAlignment::Start,
+            vertical_arrangement: VerticalArrangement::Start,
+
+            Text {
+               class: "p-4 font-semibold",
+               text: "Locations"
             }
         }
     }
