@@ -23,6 +23,7 @@ serde = { version = "1.0.217", features = ["derive"] }
 # The crate wasm-bindgen is panicking in platform 'web'
 #wasm-bindgen = "0.2"
 dioxus-material = "0.2.1"
+dioxus-charts = "0.3"
 
 [features]
 default = []

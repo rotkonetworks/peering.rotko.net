@@ -17,3 +17,4 @@ inherits = "dev"
 [workspace.dependencies]
 rand_core = "0.9.1"  # Ensure this version depends on getrandom 0.3
 getrandom = "0.3"
+dioxus-charts = "0.3"

@@ -1,6 +1,6 @@
 use crate::design::component::button::ButtonProps;
 use crate::design::component::icon::Icon;
-use crate::foundation::{HorizontalAlignment, VerticalArrangement};
+use crate::foundation::{Alignment, Arrangement};
 use dioxus::core_macro::{component, rsx, Props};
 use dioxus::dioxus_core::Element;
 use dioxus::events::{FocusEvent, MouseEvent};
@@ -12,11 +12,11 @@ pub struct ColumnProps {
     #[props(optional)]
     class: Option<String>,
 
-    #[props(optional, default = VerticalArrangement::Start)]
-    vertical_arrangement: VerticalArrangement,
+    #[props(optional, default = Arrangement::Start)]
+    vertical_arrangement: Arrangement,
 
-    #[props(optional, default = HorizontalAlignment::Start)]
-    horizontal_alignment: HorizontalAlignment,
+    #[props(optional, default = Alignment::Start)]
+    horizontal_alignment: Alignment,
 
     children: Element,
 }
@@ -24,17 +24,17 @@ pub struct ColumnProps {
 #[component]
 pub fn Column(props: ColumnProps) -> Element {
     let vertical = match props.vertical_arrangement {
-        VerticalArrangement::Center => "justify-center",
-        VerticalArrangement::Between => "justify-between",
-        VerticalArrangement::Around => "justify-around",
-        VerticalArrangement::Evenly => "justify-evenly",
-        VerticalArrangement::Start => "justify-start",
+        Arrangement::Center => "justify-center",
+        Arrangement::Between => "justify-between",
+        Arrangement::Around => "justify-around",
+        Arrangement::Evenly => "justify-evenly",
+        Arrangement::Start => "justify-start",
     };
 
     let horizontal = match props.horizontal_alignment {
-        HorizontalAlignment::Center => "items-center",
-        HorizontalAlignment::End => "items-end",
-        HorizontalAlignment::Start => "items-start",
+        Alignment::Center => "items-center",
+        Alignment::End => "items-end",
+        Alignment::Start => "items-start",
     };
 
     let default_class = format!(
