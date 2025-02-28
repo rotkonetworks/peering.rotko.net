@@ -7,7 +7,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 COPY . .
-RUN dx bundle --release --platform web --package peering-rotko-net
+RUN cd app && dx bundle --release --platform web --package peering-rotko-net
+
 
 FROM alpine:latest
 RUN apk add --no-cache ca-certificates
