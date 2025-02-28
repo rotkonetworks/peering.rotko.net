@@ -55,11 +55,20 @@ To run for a different platform, use the `--platform platform` flag. E.g.: `desk
 To build, run:
 
 ```bash
-dioxus build --release
+cd app
+dx bundle --platform web
 ```
 
 This will create the files to target folder:
 
-``
-target/dx/peering-rotko-net/release/web/public"
-``
+```
+target/dx/peering-rotko-net/release/web/public
+```
+
+## Deploy
+
+Copy to the server.
+
+```bash
+scp -r target/dx/peering-rotko-net/release/web peering@peering.rotko.net:/home/peering
+```

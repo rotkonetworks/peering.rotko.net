@@ -3,6 +3,10 @@
 # App (Project) Name
 name = "peering-rotko-net"
 
+[bundle]
+identifier = "net.rotko.peering"
+publisher = "Rotko Peering"
+
 [web.app]
 
 # HTML title tag content

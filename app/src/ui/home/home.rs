@@ -373,35 +373,34 @@ fn Locations() -> Element {
     }
 }
 
-/// Echo component that demonstrates fullstack server functions.
 #[component]
-fn Echo() -> Element {
-    let mut response = use_signal(|| String::new());
-
+fn LocationsHeader() -> Element {
     rsx! {
-        div {
-            id: "echo",
-            h4 { "ServerFn Echo" }
-            input {
-                placeholder: "Type here to echo anything...",
-                oninput:  move |event| async move {
-                    let data = echo_server(event.value()).await.unwrap();
-                    response.set(data);
-                },
-            }
+        Row {
+            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-4",
+            horizontal_arrangement: Arrangement::Start,
+            vertical_alignment: Alignment::Start,
 
-            if !response().is_empty() {
-                p {
-                    "Server echoed: "
-                    i { "{response}" }
-                }
+            Text {
+               class: "font-medium",
+               text: "Name"
             }
         }
     }
 }
 
-/// Echo the user input on the server.
-#[server(EchoServer)]
-async fn echo_server(input: String) -> Result<String, ServerFnError> {
-    Ok(input)
+#[component]
+fn LocationsRow() -> Element {
+    rsx! {
+        Column {
+            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-4",
+            horizontal_alignment: Alignment::Start,
+            vertical_arrangement: Arrangement::Start,
+
+            Text {
+               class: "font-semibold",
+               text: "Locations"
+            }
+        }
+    }
 }
