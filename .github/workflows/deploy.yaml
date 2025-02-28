@@ -1,63 +1,29 @@
-name: "Dioxus Deploy"
-description: "Deploy a Dioxus web application to GitHub Pages."
-icon: "book"
-color: "blue"
+name: Deploy to production
 
-inputs:
-  build-mode:
-    description: "Build mode for the project [default: 'release']"
-    required: false
-    default: "release"
-  toolchain:
-    description: "Rust toolchain to use for building [default: 'stable']"
-    required: false
-    default: "stable"
-  out-directory:
-    description: "The `out_dir` property configured in Dioxus.toml [default: 'dist']"
-    required: false
-    default: "dist"
-  root-path:
-    description: "Source code root path [default: '.']"
-    required: false
-    default: "."
+on:
+  push:
+    branches:
+      - master
 
-runs:
-  using: "composite"
-  steps:
-    # Checkout the repository
-    - uses: actions/checkout@v3
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-    # Set up the Rust toolchain
-    - uses: actions-rs/toolchain@v1
-      with:
-        toolchain: ${{ inputs.toolchain }}
-        profile: minimal
-        target: wasm32-unknown-unknown
-        override: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # Cache Rust dependencies to speed up builds
-    - uses: Swatinem/rust-cache@v2
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan peering.rotko.net >> ~/.ssh/known_hosts
 
-    # Install Dioxus CLI
-    - name: Install Dioxus CLI
-      shell: bash
-      run: |
-        set -euo pipefail
-        cargo install dioxus-cli --locked
+      - name: Sync files to server
+        run: |
+          rsync -avz --delete ./ peering@peering.rotko.net:/home/peering/peering.rotko.net
 
-    # Build the Dioxus project
-    - name: Build Project 🎁
-      shell: bash
-      run: |
-        set -euo pipefail
-        cd "${{ inputs.root-path }}"
-        dx build --${{ inputs.build-mode }}
-        cp "./${{ inputs.out-directory }}/index.html" "./${{ inputs.out-directory }}/404.html"
-
-    # Deploy to GitHub Pages
-    - name: Deploy Project 🚀
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        branch: gh-pages
-        folder: "${{ inputs.root-path }}/${{ inputs.out-directory }}"
-        clean: false
+      - name: Restart Docker Compose
+        run: |
+          ssh peering@peering.rotko.net "cd /home/peering/peering.rotko.net && docker-compose up -d --build"
