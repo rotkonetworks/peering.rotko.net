@@ -1,21 +1,23 @@
-FROM rust:bookworm AS builder
-WORKDIR /app
+FROM rust:bookworm
+WORKDIR /project_root
+
 RUN apt-get update && \
     apt-get install -y pkg-config libssl-dev curl && \
     rustup target add wasm32-unknown-unknown && \
     cargo install dioxus-cli && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
 COPY . .
+
 RUN cd app && dx bundle --release --platform web --package peering-rotko-net
 
+WORKDIR /project_root/target/dx/peering-rotko-net/release/web
 
-FROM alpine:latest
-RUN apk add --no-cache ca-certificates
-COPY --from=builder /app/target/dx/peering-rotko-net/release/web/ /usr/local/app
-RUN chmod +x /usr/local/app/server
+RUN chmod +x ./server
+
 ENV PORT=80
 ENV IP=0.0.0.0
 EXPOSE 80
-WORKDIR /usr/local/app
-ENTRYPOINT ["/usr/local/app/server"]
+
+CMD ["./server"]
