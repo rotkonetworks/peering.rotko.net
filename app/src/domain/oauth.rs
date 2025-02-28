@@ -4,7 +4,6 @@ use base64::Engine;
 use sha2::{Digest, Sha256};
 use web_sys::{js_sys, window};
 
-
 pub const CLIENT_ID: &str = "03RBggyJxLjTXvX2eU9Uvk9d3WY0etriBficGGSO";
 const REDIRECT_ROUTE: &str = "/login";
 const PEERING_DB_AUTHORIZE_URL: &str = "https://auth.peeringdb.com/oauth2/authorize/";
