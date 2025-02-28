@@ -258,7 +258,6 @@ fn Greeting(user_name: String) -> Element {
 
 #[component]
 fn Traffic() -> Element {
-
     let values: Vec<f32> = vec![10.0, 2.0];
     let total: f32 = values.iter().sum();
 

@@ -28,8 +28,5 @@ pub enum Route {
     HomeScreen {},
 
     #[route("/login?:code&:state")]
-    LoginScreen {
-        code: String,
-        state: String
-    },
+    LoginScreen { code: Option<String>, state: Option<String> },
 }

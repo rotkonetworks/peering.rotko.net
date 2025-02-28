@@ -2,7 +2,6 @@ use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]
 pub struct MenuProps {
-
     #[props(optional)]
     on_dismiss: EventHandler<FocusEvent>,
 
@@ -14,7 +13,6 @@ pub struct MenuProps {
 
 #[component]
 pub fn Menu(props: MenuProps) -> Element {
-
     let alignment_class = if props.align_right {
         "right-0" // Align to the right edge
     } else {
