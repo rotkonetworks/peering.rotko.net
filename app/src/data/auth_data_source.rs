@@ -18,7 +18,7 @@ impl AuthDataSource {
         client_id: &str,
         code_verifier: &str,
     ) -> Result<AuthResponse, Box<dyn Error>> {
-        let url = "https://auth.peeringdb.com/oauth2/token".to_string();
+        let url = "https://www.peeringdb.com/oauth2/token".to_string();
 
         let params = [
             ("grant_type", "authorization_code"),
