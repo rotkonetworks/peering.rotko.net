@@ -12,7 +12,7 @@ impl ProfileDataSource {
     }
 
     pub async fn get(&self) -> Result<Profile, Box<dyn Error>> {
-        let url = "https://auth.peeringdb.com/profile/v1".to_string();
+        let url = "https://www.peeringdb.com/profile/v1".to_string();
         let response = self.client.get(&url).send().await?;
 
         if response.status().is_success() {
