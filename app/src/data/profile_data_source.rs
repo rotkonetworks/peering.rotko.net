@@ -3,7 +3,7 @@ use reqwest::Client;
 use std::error::Error;
 
 pub struct ProfileDataSource {
-    client: Client,
+    client: Client
 }
 
 impl ProfileDataSource {
@@ -12,7 +12,7 @@ impl ProfileDataSource {
     }
 
     pub async fn get(&self) -> Result<Profile, Box<dyn Error>> {
-        let url = "https://www.peeringdb.com/profile/v1".to_string();
+        let url = "https://auth.peeringdb.com/profile/v1".to_string();
         let response = self.client.get(&url).send().await?;
 
         if response.status().is_success() {

@@ -24,7 +24,7 @@ pub fn Menu(props: MenuProps) -> Element {
             class: "absolute mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-50 {alignment_class}",
             tabindex: 0,
             onmounted: move |event| async move {
-                event.set_focus(true);
+                event.set_focus(true).await.unwrap();
             },
             onfocusout: props.on_dismiss,
             {props.children}

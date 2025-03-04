@@ -4,8 +4,8 @@ use crate::ui::app::app::Route;
 use dioxus::html::completions::CompleteWithBraces::code;
 use dioxus::prelude::*;
 use dioxus_charts::charts::pie::LabelPosition;
-use dioxus_charts::{BarChart, LineChart, PieChart};
-use std::ops::{Deref, Div};
+use dioxus_charts::PieChart;
+use std::ops::Deref;
 use ui::design::component::app_bar::TopAppBar;
 use ui::design::component::button::{Button, IconButton};
 use ui::design::component::grid::Grid;
@@ -135,12 +135,6 @@ fn Success(profile: Profile) -> Element {
 
     let mut menu_open = use_signal(|| false);
 
-    let network_names: Vec<String> = profile
-        .networks
-        .iter()
-        .map(|network| network.name.clone())
-        .collect();
-
     rsx! {
         div {
             class: "h-screen flex flex-col",
@@ -149,46 +143,49 @@ fn Success(profile: Profile) -> Element {
                 title: "Peering",
                 actions: Some(
                     rsx! {
-                         div {
-                            class: "relative inline-block",
-                            Button {
-                                label: selected_network().unwrap().name,
-                                trailing_icon: Icon {
-                                    width: 24,
-                                    height: 24,
-                                    src: reference::icon::CHEVRON_DOWN.to_string()
-                                },
-                                on_click: move |_| { menu_open.toggle() }
-                            }
-
-                            if menu_open(){
-                                Menu {
-                                    align_right: true,
-                                    on_dismiss: move |_| {
-                                        menu_open.set(false)
+                        if let Some(current_network) = selected_network() {
+                            div {
+                                class: "relative inline-block",
+                                Button {
+                                    label: current_network.name,
+                                    trailing_icon: Icon {
+                                        width: 24,
+                                        height: 24,
+                                        src: reference::icon::CHEVRON_DOWN.to_string()
                                     },
+                                    on_click: move |_| { menu_open.toggle() }
+                                }
 
-                                    for network in profile.networks.clone() {
-                                        ListItem {
-                                            label: &network.name,
-                                            trailing_content: Some(
-                                                rsx! {
-                                                    input {
-                                                        class: "cursor-pointer",
-                                                        r#type: "radio",
-                                                        checked: network.asn == selected_network().unwrap().asn
+                                if menu_open(){
+                                    Menu {
+                                        align_right: true,
+                                        on_dismiss: move |_| {
+                                            menu_open.set(false)
+                                        },
+
+                                        for network in profile.networks.clone() {
+                                            ListItem {
+                                                label: &network.name,
+                                                trailing_content: Some(
+                                                    rsx! {
+                                                        input {
+                                                            class: "cursor-pointer",
+                                                            r#type: "radio",
+                                                            checked: network.asn == selected_network().unwrap().asn
+                                                        }
                                                     }
+                                                ),
+                                                on_click: move |_| {
+                                                    selected_network.set(Some(network.clone()));
+                                                    menu_open.set(false);
                                                 }
-                                            ),
-                                            on_click: move |_| {
-                                                selected_network.set(Some(network.clone()));
-                                                menu_open.set(false);
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+
 
                         IconButton {
                             icon: Icon {

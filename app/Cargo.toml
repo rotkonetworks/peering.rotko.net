@@ -8,7 +8,7 @@ edition = "2021"
 
 [dependencies]
 ui = { path = "../ui" }
-dioxus = { version = "0.6.3", features = ["router", "web"] }
+dioxus = { version = "0.6.3", features = ["router", "fullstack"] }
 manganis = "0.6.2"
 console = "0.15.10"
 sha2 = "0.10"
