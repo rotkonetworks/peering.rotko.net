@@ -41,7 +41,7 @@ pub async fn get_peering_db_token(
     code_verifier: String,
 ) -> Result<AuthResponse, ServerFnError> {
     
-    let client = create_client();
+    let client = create_client(None);
     
     let url = "https://auth.peeringdb.com/oauth2/token".to_string();
 
@@ -59,6 +59,9 @@ pub async fn get_peering_db_token(
         let token_response = response.json::<AuthResponse>().await?;
         Ok(token_response)
     } else {
-        ServerFnError(format!("Failed to exchange token: HTTP {}", response.status()).into())
+        Err(ServerFnError::ServerError(format!(
+            "Failed to exchange token: HTTP {}",
+            response.status()
+        )))
     }
 }
