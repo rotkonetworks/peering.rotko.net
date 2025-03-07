@@ -217,8 +217,34 @@ fn Success(profile: Profile) -> Element {
 
                     Bandwidth {}
 
-                    Locations {}
-
+                    Locations {
+                        data: vec![
+                            PeerData {
+                                name: "Peer 1".to_string(),
+                                rotko_ip: "192.168.1.1".to_string(),
+                                peer_ip: "10.0.0.1".to_string(),
+                                prefix_sent: "192.168.1.0/24".to_string(),
+                                prefix_received: "10.0.0.0/24".to_string(),
+                                session_established: "Yes".to_string(),
+                            },
+                            PeerData {
+                                name: "Peer 2".to_string(),
+                                rotko_ip: "192.168.2.1".to_string(),
+                                peer_ip: "10.0.1.1".to_string(),
+                                prefix_sent: "192.168.2.0/24".to_string(),
+                                prefix_received: "10.0.1.0/24".to_string(),
+                                session_established: "No".to_string(),
+                            },
+                            PeerData {
+                                name: "Peer 3".to_string(),
+                                rotko_ip: "192.168.3.1".to_string(),
+                                peer_ip: "10.0.2.1".to_string(),
+                                prefix_sent: "192.168.3.0/24".to_string(),
+                                prefix_received: "10.0.2.0/24".to_string(),
+                                session_established: "Yes".to_string(),
+                            },
+                        ]
+                    }
                 }
             }
         }
@@ -291,7 +317,7 @@ fn Traffic() -> Element {
                 }
 
                 Text {
-                    class: "text-4xl text-gray-700 font-semibold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
+                    class: "text-2xl sm:text-4xl text-gray-700 font-semibold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
                     text: format!("{}k", total)
                 }
             }
@@ -305,17 +331,17 @@ fn Traffic() -> Element {
                 }
 
                 Text {
-                   class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
-                   text: "From Rotko"
+                    class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
+                    text: "From Rotko"
                 }
 
                  Text {
-                   class: "text-sm font-medium text-gray-700 py-2 mx-1",
-                   text: percentages.first().cloned().unwrap_or_else(|| "".into()),
+                     class: "text-sm font-medium text-gray-700 py-2 mx-1",
+                     text: percentages.first().cloned().unwrap_or_else(|| "".into()),
                  }
             }
 
-             Row {
+            Row {
                  class: "flex w-full",
                  vertical_alignment: Alignment::Center,
 
@@ -346,24 +372,66 @@ fn Bandwidth() -> Element {
             vertical_arrangement: Arrangement::Start,
 
             Text {
-               class: "font-semibold",
-               text: "Bandwidth"
+                class: "font-semibold",
+                text: "Bandwidth"
             }
         }
     }
 }
 
+#[derive(Clone, Debug, PartialEq)]
+struct PeerData {
+    name: String,
+    rotko_ip: String,
+    peer_ip: String,
+    prefix_sent: String,
+    prefix_received: String,
+    session_established: String,
+}
+
 #[component]
-fn Locations() -> Element {
+fn Locations(data: Vec<PeerData>) -> Element {
     rsx! {
         Column {
-            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-4",
+            class: "col-span-3 bg-white w-full min-h-[260px] border border-gray-300 rounded-lg shadow-lg p-4",
             horizontal_alignment: Alignment::Start,
             vertical_arrangement: Arrangement::Start,
 
             Text {
-               class: "font-semibold",
+               class: "font-semibold pb-4",
                text: "Locations"
+            }
+
+            div {
+                class: "overflow-x-auto",
+                table {
+                    class: "min-w-full border-collapse border border-gray-300",
+
+                    thead {
+                        class: "bg-gray-200",
+                        tr {
+                            th { class: "border border-gray-300 px-4 py-2", "Name" }
+                            th { class: "border border-gray-300 px-4 py-2", "Rotko IP Address" }
+                            th { class: "border border-gray-300 px-4 py-2", "Peer IP Address" }
+                            th { class: "border border-gray-300 px-4 py-2", "Prefix Sent to Peer" }
+                            th { class: "border border-gray-300 px-4 py-2", "Prefix Received from Peer" }
+                            th { class: "border border-gray-300 px-4 py-2", "Session Established" }
+                        }
+                    }
+
+                    tbody {
+                       for peer in data {
+                            tr {
+                                td { class: "border border-gray-300 px-4 py-2", "{peer.name}" }
+                                td { class: "border border-gray-300 px-4 py-2", "{peer.rotko_ip}" }
+                                td { class: "border border-gray-300 px-4 py-2", "{peer.peer_ip}" }
+                                td { class: "border border-gray-300 px-4 py-2", "{peer.prefix_sent}" }
+                                td { class: "border border-gray-300 px-4 py-2", "{peer.prefix_received}" }
+                                td { class: "border border-gray-300 px-4 py-2", "{peer.session_established}" }
+                            }
+                       }
+                    }
+                }
             }
         }
     }
