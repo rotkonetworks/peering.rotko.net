@@ -3,21 +3,17 @@ use crate::domain::oauth::{
     build_oauth_url, generate_code_challenge, generate_code_verifier, generate_random_state,
     get_redirect_uri, CLIENT_ID,
 };
-use crate::ui::app::app::Route;
-use dioxus::prelude::server_fn::client;
 use dioxus::prelude::*;
-use reqwest::Client;
-use std::fs::read_dir;
-use std::ops::{Deref, Not};
+use std::ops::Deref;
 use std::string::ToString;
 use ui::design::component::icon::Icon;
-use ui::design::component::image::{Image, ImageProps};
+use ui::design::component::image::Image;
 use ui::design::component::list::ListItem;
 use ui::design::component::text::Text;
 use ui::design::reference;
 use ui::foundation::column::Column;
-use ui::foundation::row::Row;
 use ui::foundation::{Alignment, Arrangement};
+use crate::ui::app::app::Route;
 
 #[derive(Clone, PartialEq)]
 enum LoginState {
@@ -50,9 +46,8 @@ pub fn LoginScreen(code: String, state: String) -> Element {
 
                 if !oauth_code.is_empty() {
                     let auth_repository = create_auth_repository();
-                    let code_verifier = credentials_repository.get_oauth_code_verifier().unwrap();
-                    let code_challenge = generate_code_challenge(&code_verifier);
                     let redirect_uri = get_redirect_uri();
+                    let code_verifier = credentials_repository.get_oauth_code_verifier().unwrap();
                     let result = auth_repository
                         .get(&oauth_code, &redirect_uri, CLIENT_ID, &code_verifier)
                         .await;

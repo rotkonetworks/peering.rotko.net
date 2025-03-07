@@ -7,7 +7,6 @@ use crate::data::profile_repository::ProfileRepository;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::Client;
 use web_sys::{window, Storage};
-
 pub mod auth;
 mod auth_data_source;
 pub mod auth_repository;
@@ -22,6 +21,7 @@ fn create_storage() -> Storage {
         .and_then(|w| w.local_storage().ok().flatten())
         .unwrap()
 }
+
 fn create_client(access_token: Option<String>) -> Client {
     if let Some(access_token) = access_token {
         let mut headers = HeaderMap::new();
