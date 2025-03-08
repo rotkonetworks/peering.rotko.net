@@ -67,8 +67,12 @@ target/dx/peering-rotko-net/release/web/public
 
 ## Deploy
 
-Copy to the server.
+To manually deploy the project, you can copy to the server.
 
 ```bash
-scp -r target/dx/peering-rotko-net/release/web peering@peering.rotko.net:/home/peering
+scp -r target/dx/peering-rotko-net/release peering@peering.rotko.net:/home/peering
 ```
+
+Also, make sure to run the `server` file.
+
+Alternatively, you can use _Docker_.
