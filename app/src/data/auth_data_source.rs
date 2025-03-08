@@ -62,6 +62,6 @@ pub async fn get_peering_db_token(
         let token_response = response.json::<AuthResponse>().await?;
         Ok(token_response)
     } else {
-        Err(ServerFnError::ServerError(response.text().await.unwrap()))
+        Err(ServerFnError::ServerError(response.json().await.unwrap()))
     }
 }
