@@ -1,10 +1,6 @@
-use crate::design::component::button::ButtonProps;
-use crate::design::component::icon::Icon;
 use crate::foundation::{Alignment, Arrangement};
 use dioxus::core_macro::{component, rsx, Props};
 use dioxus::dioxus_core::Element;
-use dioxus::events::{FocusEvent, MouseEvent};
-use dioxus::hooks::use_signal;
 use dioxus::prelude::*;
 
 #[derive(Props, Clone, PartialEq)]

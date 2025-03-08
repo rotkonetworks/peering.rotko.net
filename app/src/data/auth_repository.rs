@@ -16,10 +16,15 @@ impl AuthRepository {
         authorization_code: &str,
         redirect_uri: &str,
         client_id: &str,
-        code_verifier: &str,
+        // code_verifier: &str,
     ) -> Result<AuthResponse, Box<dyn Error>> {
         self.data_source
-            .get(authorization_code, redirect_uri, client_id, code_verifier)
+            .get(
+                authorization_code,
+                redirect_uri,
+                client_id,
+                 // code_verifier
+            )
             .await
     }
 }

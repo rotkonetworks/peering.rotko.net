@@ -1,7 +1,5 @@
-use crate::data::profile::{Network, Profile};
+use crate::data::profile::{Profile};
 use crate::data::{create_credentials_repository, create_profile_repository};
-use crate::ui::app::app::Route;
-use dioxus::html::completions::CompleteWithBraces::code;
 use dioxus::prelude::*;
 use dioxus_charts::charts::pie::LabelPosition;
 use dioxus_charts::PieChart;
@@ -69,9 +67,9 @@ pub fn HomeScreen() -> Element {
                 //     ],
                 // });
 
-                match profile_repository.get().await {
-                    Ok(profile) => return HomeState::Success(profile),
-                    Err(_) => {}
+                return match profile_repository.get().await {
+                    Ok(profile) => HomeState::Success(profile),
+                    Err(_) => HomeState::Error
                 }
             }
 

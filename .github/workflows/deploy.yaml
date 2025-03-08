@@ -19,6 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set environment variable
+        run: echo "PEERINGDB_CLIENT_SECRET=${{ secrets.PEERINGDB_CLIENT_SECRET }}" >> $GITHUB_ENV
+
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh

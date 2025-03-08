@@ -1,8 +1,8 @@
 use crate::data::auth::AuthResponse;
 use dioxus::prelude::*;
 use reqwest::Client;
+use std::env;
 use std::error::Error;
-use crate::data::create_client;
 
 pub struct AuthDataSource {
     client: Client,
@@ -18,17 +18,16 @@ impl AuthDataSource {
         authorization_code: &str,
         redirect_uri: &str,
         client_id: &str,
-        code_verifier: &str,
+        // code_verifier: &str,
     ) -> Result<AuthResponse, Box<dyn Error>> {
-        
         get_peering_db_token(
             authorization_code.into(),
             redirect_uri.into(),
             client_id.into(),
-            code_verifier.into(),
+            // code_verifier.into(),
         )
-            .await
-            .map_err(|e| Box::<dyn Error>::from(e.to_string()))
+        .await
+        .map_err(|e| Box::<dyn Error>::from(e.to_string()))
     }
 }
 
@@ -38,11 +37,13 @@ pub async fn get_peering_db_token(
     authorization_code: String,
     redirect_uri: String,
     client_id: String,
-    code_verifier: String,
+    // code_verifier: String,
 ) -> Result<AuthResponse, ServerFnError> {
-    
     let client = create_client(None);
-    
+
+    let client_secret = env::var("PEERINGDB_CLIENT_SECRET")
+        .expect("Environment variable PEERINGDB_CLIENT_SECRET is not set. Verify if the variable was correctly set, likely by the Docker and CI system.");
+
     let url = "https://auth.peeringdb.com/oauth2/token".to_string();
 
     let params = [
@@ -50,7 +51,8 @@ pub async fn get_peering_db_token(
         ("code", &authorization_code),
         ("redirect_uri", &redirect_uri),
         ("client_id", &client_id),
-        ("code_verifier", &code_verifier),
+        // ("code_verifier", &code_verifier),
+        ("client_secret", &client_secret),
     ];
 
     let response = client.post(&url).form(&params).send().await?;

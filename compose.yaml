@@ -8,3 +8,4 @@ services:
     restart: unless-stopped
     environment:
       - RUST_LOG=info
+      - PEERINGDB_CLIENT_SECRET="${PEERINGDB_CLIENT_SECRET}"

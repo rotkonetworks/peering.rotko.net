@@ -1,7 +1,7 @@
 use web_sys::Storage;
 
 const OAUTH_STATE_KEY: &str = "oauth_state";
-const OAUTH_CODE_VERIFIER_KEY: &str = "oauth_code_verifier";
+// const OAUTH_CODE_VERIFIER_KEY: &str = "oauth_code_verifier";
 
 const ACCESS_TOKEN_KEY: &str = "access_token";
 

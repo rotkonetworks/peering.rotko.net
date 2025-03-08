@@ -1,8 +1,9 @@
 use crate::data::{create_auth_repository, create_credentials_repository};
 use crate::domain::oauth::{
-    build_oauth_url, generate_code_challenge, generate_code_verifier, generate_random_state,
+    build_oauth_url, generate_random_state,
     get_redirect_uri, CLIENT_ID,
 };
+use crate::ui::app::app::Route;
 use dioxus::prelude::*;
 use std::ops::Deref;
 use std::string::ToString;
@@ -13,7 +14,6 @@ use ui::design::component::text::Text;
 use ui::design::reference;
 use ui::foundation::column::Column;
 use ui::foundation::{Alignment, Arrangement};
-use crate::ui::app::app::Route;
 
 #[derive(Clone, PartialEq)]
 enum LoginState {
@@ -47,9 +47,14 @@ pub fn LoginScreen(code: String, state: String) -> Element {
                 if !oauth_code.is_empty() {
                     let auth_repository = create_auth_repository();
                     let redirect_uri = get_redirect_uri();
-                    let code_verifier = credentials_repository.get_oauth_code_verifier().unwrap();
+                    // let code_verifier = credentials_repository.get_oauth_code_verifier().unwrap();
                     let result = auth_repository
-                        .get(&oauth_code, &redirect_uri, CLIENT_ID, &code_verifier)
+                        .get(
+                            &oauth_code,
+                            &redirect_uri,
+                            CLIENT_ID,
+                            // &code_verifier
+                        )
                         .await;
                     return match result {
                         Ok(response) => {
@@ -85,13 +90,13 @@ pub fn LoginScreen(code: String, state: String) -> Element {
     let auth_with_peering_db = move |_| {
         let credentials_repository = create_credentials_repository();
 
-        let code_verifier = generate_code_verifier();
-        credentials_repository.set_oauth_code_verifier(&code_verifier.clone());
+        // let code_verifier = generate_code_verifier();
+        // credentials_repository.set_oauth_code_verifier(&code_verifier.clone());
 
         let oauth_state = generate_random_state();
         credentials_repository.set_oauth_state(&oauth_state);
 
-        let authorized_url = build_oauth_url(&code_verifier, &oauth_state);
+        let authorized_url = build_oauth_url(&oauth_state);
 
         web_sys::window()
             .unwrap()
