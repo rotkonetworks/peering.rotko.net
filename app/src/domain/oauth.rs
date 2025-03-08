@@ -18,6 +18,7 @@ pub fn build_oauth_url(
     format!(
         "{PEERING_DB_AUTHORIZE_URL}\
         ?response_type=code&client_id={CLIENT_ID}\
+        &scope=profile email networks\
         &redirect_uri={redirect_uri}\
         &state={state}\
         "

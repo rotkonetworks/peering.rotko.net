@@ -49,11 +49,11 @@ pub async fn get_peering_db_token(
 
     let params = [
         ("grant_type", "authorization_code"),
-        ("code", &authorization_code),
         ("redirect_uri", &redirect_uri),
         ("client_id", &client_id),
-        // ("code_verifier", &code_verifier),
         ("client_secret", &client_secret),
+        // ("code_verifier", &code_verifier),
+        ("code", &authorization_code),
     ];
 
     let response = client.post(&url).form(&params).send().await?;
@@ -62,9 +62,6 @@ pub async fn get_peering_db_token(
         let token_response = response.json::<AuthResponse>().await?;
         Ok(token_response)
     } else {
-        Err(ServerFnError::ServerError(format!(
-            "Failed to exchange token: HTTP {}",
-            response.status()
-        )))
+        Err(ServerFnError::ServerError(response.text().await.unwrap()))
     }
 }
