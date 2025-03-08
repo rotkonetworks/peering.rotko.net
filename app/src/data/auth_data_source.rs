@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 use reqwest::Client;
 use std::env;
 use std::error::Error;
+use crate::data::create_client;
 
 pub struct AuthDataSource {
     client: Client,
