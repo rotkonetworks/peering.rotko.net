@@ -63,9 +63,8 @@ pub async fn get_peering_db_token(
         Ok(token_response)
     } else {
         Err(ServerFnError::ServerError(format!(
-            "Failed to exchange token: HTTP {}. Body: '{}'",
-            response.status(),
-            response.text()
+            "Failed to exchange token: HTTP {}",
+            response.status()
         )))
     }
 }

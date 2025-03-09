@@ -67,9 +67,9 @@ pub fn HomeScreen() -> Element {
                 //     ],
                 // });
 
-                return match profile_repository.get().await {
-                    Ok(profile) => HomeState::Success(profile),
-                    Err(_) => HomeState::Error
+                match profile_repository.get().await {
+                    Ok(profile) => return HomeState::Success(profile),
+                    Err(_) => {}
                 }
             }
 
