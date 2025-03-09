@@ -49,11 +49,10 @@ pub async fn get_peering_db_token(
 
     let params = [
         ("grant_type", "authorization_code"),
+        ("code", &authorization_code),
         ("redirect_uri", &redirect_uri),
         ("client_id", &client_id),
         ("client_secret", &client_secret),
-        // ("code_verifier", &code_verifier),
-        ("code", &authorization_code),
     ];
 
     let response = client.post(&url).form(&params).send().await?;
