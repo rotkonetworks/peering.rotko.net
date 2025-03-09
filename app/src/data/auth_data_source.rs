@@ -1,9 +1,10 @@
 use crate::data::auth::AuthResponse;
+use crate::data::create_client;
 use dioxus::prelude::*;
 use reqwest::Client;
 use std::env;
 use std::error::Error;
-use crate::data::create_client;
+use serde_json::json;
 
 pub struct AuthDataSource {
     client: Client,
@@ -47,15 +48,15 @@ pub async fn get_peering_db_token(
 
     let url = "https://auth.peeringdb.com/oauth2/token/".to_string();
 
-    let params = [
-        ("grant_type", "authorization_code"),
-        ("code", &authorization_code),
-        ("redirect_uri", &redirect_uri),
-        ("client_id", &client_id),
-        ("client_secret", &client_secret),
-    ];
+    let params = json!({
+        "grant_type": "authorization_code",
+        "code": authorization_code,
+        "redirect_uri": redirect_uri,
+        "client_id": client_id,
+        "client_secret": client_secret
+    });
 
-    let response = client.post(&url).form(&params).send().await?;
+    let response = client.post(&url).json(&params).send().await?;
 
     if response.status().is_success() {
         let token_response = response.json::<AuthResponse>().await?;
