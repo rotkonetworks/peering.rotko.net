@@ -45,7 +45,7 @@ pub async fn get_peering_db_token(
     let client_secret = env::var("PEERINGDB_CLIENT_SECRET")
         .expect("Environment variable PEERINGDB_CLIENT_SECRET is not set. Verify if the variable was correctly set, likely by the Docker and CI system.");
 
-    let url = "https://auth.peeringdb.com/oauth2/token".to_string();
+    let url = "https://auth.peeringdb.com/oauth2/token/".to_string();
 
     let params = [
         ("grant_type", "authorization_code"),
@@ -62,6 +62,10 @@ pub async fn get_peering_db_token(
         let token_response = response.json::<AuthResponse>().await?;
         Ok(token_response)
     } else {
-        Err(ServerFnError::ServerError(response.text().await.unwrap()))
+        Err(ServerFnError::ServerError(format!(
+            "Failed to exchange token: HTTP {}. Body: '{}'",
+            response.status(),
+            response.text()
+        )))
     }
 }
