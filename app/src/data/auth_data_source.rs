@@ -82,7 +82,10 @@ pub async fn get_peering_db_token(
         .expect("Missing PEERINGDB_CLIENT_SECRET env var");
 
     let masked = mask_secret(&client_secret);
+    info!("Client ID: {}", &client_id);
     info!("Client Secret: {}", masked);
+    info!("Code: {}", &authorization_code);
+    info!("Redirect URI: {}", &redirect_uri);
 
     let url = "https://auth.peeringdb.com/oauth2/token/".to_string();
 
