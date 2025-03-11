@@ -5,6 +5,7 @@ use reqwest::Client;
 use serde_json::json;
 use std::env;
 use std::error::Error;
+use dioxus::logger::tracing::{Level, info};
 
 pub struct AuthDataSource {
     client: Client,
@@ -25,15 +26,20 @@ impl AuthDataSource {
 
         let url = "https://auth.peeringdb.com/oauth2/token/".to_string();
 
-        let params = json!({
-            "grant_type": "authorization_code",
-            "code": authorization_code,
-            "redirect_uri": redirect_uri,
-            "client_id": client_id,
-            "code_verifier": code_verifier,
-        });
+        let params = [
+            ("grant_type", "authorization_code"),
+            ("code", &authorization_code),
+            ("redirect_uri", &redirect_uri),
+            ("client_id", &client_id),
+            ("code_verifier", &code_verifier),
+        ];
 
-        let response = self.client.post(&url).json(&params).send().await?;
+        let response = self.client
+            .post(&url)
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .form(&params)
+            .send()
+            .await?;
 
         if response.status().is_success() {
             let token_response = response.json::<AuthResponse>().await?;
@@ -73,7 +79,10 @@ pub async fn get_peering_db_token(
     let client = Client::builder().build().unwrap();
 
     let client_secret = env::var("PEERINGDB_CLIENT_SECRET")
-        .expect("Environment variable PEERINGDB_CLIENT_SECRET is not set. Verify if the variable was correctly set, likely by the Docker and CI system.");
+        .expect("Missing PEERINGDB_CLIENT_SECRET env var");
+
+    let masked = mask_secret(&client_secret);
+    info!("Client Secret: {}", masked);
 
     let url = "https://auth.peeringdb.com/oauth2/token/".to_string();
 
@@ -104,4 +113,13 @@ pub async fn get_peering_db_token(
             error_text
         )))
     }
+}
+
+fn mask_secret(secret: &str) -> String {
+    if secret.len() < 8 {
+        return "*".repeat(secret.len()); // Fully mask if too short
+    }
+    let (start, end) = secret.split_at(4);
+    let last4 = &end[end.len().saturating_sub(4)..]; // Get last 4 safely
+    format!("{}****{}", start, last4)
 }

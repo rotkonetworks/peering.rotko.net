@@ -30,4 +30,8 @@ jobs:
 
       - name: Restart Docker Compose
         run: |
-          ssh peering@peering.rotko.net "cd /home/peering/peering.rotko.net && docker-compose up -d --build"
+          ssh peering@peering.rotko.net "
+            export PEERINGDB_CLIENT_SECRET=${{ secrets.PEERINGDB_CLIENT_SECRET }} && \
+            cd /home/peering/peering.rotko.net && \
+            docker-compose up -d --build
+          "
