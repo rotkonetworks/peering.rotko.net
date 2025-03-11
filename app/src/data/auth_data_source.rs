@@ -96,9 +96,12 @@ pub async fn get_peering_db_token(
         let token_response = response.json::<AuthResponse>().await?;
         Ok(token_response)
     } else {
+        let status = &response.status();
+        let error_text = &response.text().await?; // Await first
         Err(ServerFnError::ServerError(format!(
-            "Failed to exchange token: HTTP {}",
-            response.status()
+            "Failed to exchange token: HTTP {}. {}",
+            status,
+            error_text
         )))
     }
 }
