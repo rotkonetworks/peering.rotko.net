@@ -17,13 +17,13 @@ impl CredentialsRepository {
         let _ = self.local_data_source.set_oauth_state(value);
     }
 
-    // pub fn get_oauth_code_verifier(&self) -> Option<String> {
-    //     self.local_data_source.get_oauth_code_verifier()
-    // }
-    // 
-    // pub fn set_oauth_code_verifier(&self, value: &str) {
-    //     let _ = self.local_data_source.set_oauth_code_verifier(value);
-    // }
+    pub fn get_oauth_code_verifier(&self) -> Option<String> {
+        self.local_data_source.get_oauth_code_verifier()
+    }
+
+    pub fn set_oauth_code_verifier(&self, value: &str) {
+        let _ = self.local_data_source.set_oauth_code_verifier(value);
+    }
 
     pub fn get_access_token(&self) -> Option<String> {
         self.local_data_source.get_access_token()

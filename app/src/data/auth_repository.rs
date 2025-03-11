@@ -3,10 +3,11 @@ use crate::data::auth_data_source::AuthDataSource;
 use std::error::Error;
 
 pub struct AuthRepository {
-    data_source: AuthDataSource,
+    data_source: AuthDataSource
 }
 
 impl AuthRepository {
+
     pub fn new(data_source: AuthDataSource) -> Self {
         Self { data_source }
     }
@@ -16,15 +17,21 @@ impl AuthRepository {
         authorization_code: &str,
         redirect_uri: &str,
         client_id: &str,
-        // code_verifier: &str,
+        code_verifier: &str,
     ) -> Result<AuthResponse, Box<dyn Error>> {
         self.data_source
-            .get(
-                authorization_code,
-                redirect_uri,
-                client_id,
-                 // code_verifier
-            )
+            .get(authorization_code, redirect_uri, client_id, code_verifier)
+            .await
+    }
+
+    pub async fn get2(
+        &self,
+        authorization_code: &str,
+        redirect_uri: &str,
+        client_id: &str
+    ) -> Result<AuthResponse, Box<dyn Error>> {
+        self.data_source
+            .get2(authorization_code, redirect_uri, client_id)
             .await
     }
 }
