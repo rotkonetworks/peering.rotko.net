@@ -2,8 +2,9 @@ use std::env;
 use crate::data::profile::Profile;
 use reqwest::Client;
 use std::error::Error;
-use dioxus::prelude::{server, ServerFnError};
+use dioxus::prelude::*;
 use dioxus_logger::tracing::info;
+use reqwest::header::{HeaderMap, HeaderValue};
 use crate::data::auth::AuthResponse;
 use crate::data::auth_data_source::get_peering_db_token;
 
@@ -29,10 +30,15 @@ impl ProfileDataSource {
 pub async fn get_profile(
     access_token: String
 ) -> Result<Profile, ServerFnError> {
-    let client = Client::builder().build().unwrap();
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        "Authorization",
+        HeaderValue::from_str(&format!("Bearer {}", access_token.as_str())).unwrap(),
+    );
+    let client = Client::builder().default_headers(headers).build().unwrap();
 
     let url = "https://auth.peeringdb.com/profile/v1".to_string();
-    let response = self.client.get(&url).send().await?;
+    let response = client.get(&url).send().await?;
 
     if response.status().is_success() {
         let profile_response = response.json::<Profile>().await?;

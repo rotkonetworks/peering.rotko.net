@@ -34,7 +34,7 @@ pub fn HomeScreen() -> Element {
             let credentials_repository = create_credentials_repository();
 
             if let Some(access_token) = credentials_repository.get_access_token() {
-                let profile_repository = create_profile_repository(access_token);
+                let profile_repository = create_profile_repository(access_token.clone());
 
                 // TODO Fake
                 // return HomeState::Success(Profile {
