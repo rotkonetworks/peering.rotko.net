@@ -1,8 +1,5 @@
 use crate::data::{create_auth_repository, create_credentials_repository};
-use crate::domain::oauth::{
-    build_oauth_url, build_oauth_url_pcke, generate_code_verifier, generate_random_state,
-    get_redirect_uri, CLIENT_ID,
-};
+use crate::domain::oauth::{build_oauth_url, build_oauth_url_pcke, generate_code_verifier, generate_random_state, get_redirect_uri, CLIENT_ID};
 use crate::ui::app::app::Route;
 use dioxus::prelude::*;
 use std::ops::Deref;
