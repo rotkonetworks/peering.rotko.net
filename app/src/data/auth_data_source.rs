@@ -75,7 +75,9 @@ pub async fn get_peering_db_token(
     let client = Client::builder().build().unwrap();
 
     let client_secret = env::var("PEERINGDB_CLIENT_SECRET")
-        .expect("Missing PEERINGDB_CLIENT_SECRET env var");
+        .expect("Missing PEERINGDB_CLIENT_SECRET env var")
+        .trim()
+        .to_string();
 
     let masked = mask_secret(&client_secret);
     info!("Client ID: {}", &client_id);
