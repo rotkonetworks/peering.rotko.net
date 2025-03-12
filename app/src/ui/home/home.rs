@@ -67,7 +67,7 @@ pub fn HomeScreen() -> Element {
                 //     ],
                 // });
 
-                match profile_repository.get().await {
+                match profile_repository.get(access_token.clone()).await {
                     Ok(profile) => return HomeState::Success(profile),
                     Err(_) => {}
                 }

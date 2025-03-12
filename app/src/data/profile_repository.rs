@@ -11,7 +11,7 @@ impl ProfileRepository {
         Self { data_source }
     }
 
-    pub async fn get(&self) -> Result<Profile, Box<dyn Error>> {
-        self.data_source.get().await
+    pub async fn get(&self, access_token: String) -> Result<Profile, Box<dyn Error>> {
+        self.data_source.get(access_token).await
     }
 }
