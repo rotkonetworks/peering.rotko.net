@@ -5,11 +5,6 @@ on:
     branches:
       - master
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to deploy'
-        required: true
-        default: 'develop'
 
 jobs:
   deploy:
@@ -32,4 +27,9 @@ jobs:
 
       - name: Restart Docker Compose
         run: |
-          ssh peering@peering.rotko.net "cd /home/peering/peering.rotko.net && docker-compose up -d --build"
+          ssh peering@peering.rotko.net "
+            export PEERINGDB_CLIENT_SECRET=${{ secrets.PEERINGDB_CLIENT_SECRET }} && \
+            cd /home/peering/peering.rotko.net && \
+            docker-compose down && \
+            docker-compose up -d --build
+          "

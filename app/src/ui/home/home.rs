@@ -1,7 +1,5 @@
-use crate::data::profile::{Network, Profile};
+use crate::data::profile::{Profile};
 use crate::data::{create_credentials_repository, create_profile_repository};
-use crate::ui::app::app::Route;
-use dioxus::html::completions::CompleteWithBraces::code;
 use dioxus::prelude::*;
 use dioxus_charts::charts::pie::LabelPosition;
 use dioxus_charts::PieChart;
@@ -36,7 +34,7 @@ pub fn HomeScreen() -> Element {
             let credentials_repository = create_credentials_repository();
 
             if let Some(access_token) = credentials_repository.get_access_token() {
-                let profile_repository = create_profile_repository(access_token);
+                let profile_repository = create_profile_repository(access_token.clone());
 
                 // TODO Fake
                 // return HomeState::Success(Profile {
@@ -69,7 +67,7 @@ pub fn HomeScreen() -> Element {
                 //     ],
                 // });
 
-                match profile_repository.get().await {
+                match profile_repository.get(access_token.clone()).await {
                     Ok(profile) => return HomeState::Success(profile),
                     Err(_) => {}
                 }

@@ -27,7 +27,7 @@ fn create_client(access_token: Option<String>) -> Client {
         let mut headers = HeaderMap::new();
         headers.insert(
             "Authorization",
-            HeaderValue::from_str(&format!("Token {}", access_token.as_str())).unwrap(),
+            HeaderValue::from_str(&format!("Bearer {}", access_token.as_str())).unwrap(),
         );
         Client::builder().default_headers(headers).build().unwrap()
     } else {

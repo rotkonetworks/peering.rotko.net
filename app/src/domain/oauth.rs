@@ -1,18 +1,42 @@
-/// Utility functions to generate URL and parameters of OAuth
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
 use sha2::{Digest, Sha256};
 use web_sys::{js_sys, window};
 
-pub const CLIENT_ID: &str = "03RBggyJxLjTXvX2eU9Uvk9d3WY0etriBficGGSO";
+pub const CLIENT_ID: &str = "5S43lG4Eg1lpYvzFvrwyquHOyQprSFOcOWibiwQw";
 const REDIRECT_ROUTE: &str = "/login";
 const PEERING_DB_AUTHORIZE_URL: &str = "https://auth.peeringdb.com/oauth2/authorize/";
 
-pub fn build_oauth_url(code_verifier: &str, state: &str) -> String {
+pub fn build_oauth_url(
+    state: &str,
+) -> String {
+    let redirect_uri = get_redirect_uri();
+    format!(
+        "{PEERING_DB_AUTHORIZE_URL}\
+        ?response_type=code\
+        &client_id={CLIENT_ID}\
+        &scope=profile email networks\
+        &redirect_uri={redirect_uri}\
+        &state={state}\
+        "
+    )
+}
+
+pub fn build_oauth_url_pcke(
+    code_verifier: &str,
+    state: &str,
+) -> String {
     let code_challenge = generate_code_challenge(code_verifier);
     let redirect_uri = get_redirect_uri();
     format!(
-        "{PEERING_DB_AUTHORIZE_URL}?response_type=code&client_id={CLIENT_ID}&redirect_uri={redirect_uri}&state={state}&code_challenge={code_challenge}&code_challenge_method=S256"
+        "{PEERING_DB_AUTHORIZE_URL}\
+        ?response_type=code\
+        &client_id={CLIENT_ID}\
+        &scope=profile email networks\
+        &redirect_uri={redirect_uri}\
+        &state={state}\
+        &code_challenge={code_challenge}\
+        &code_challenge_method=S256"
     )
 }
 
