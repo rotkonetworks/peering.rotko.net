@@ -1,8 +1,10 @@
-use crate::data::profile::{Profile};
+use crate::data::profile::{Network, Profile};
 use crate::data::{create_credentials_repository, create_profile_repository};
+use dioxus::html::option::selected;
 use dioxus::prelude::*;
 use dioxus_charts::charts::pie::LabelPosition;
 use dioxus_charts::PieChart;
+use dioxus_material::IconKind::Segment;
 use std::ops::Deref;
 use ui::design::component::app_bar::TopAppBar;
 use ui::design::component::button::{Button, IconButton};
@@ -11,6 +13,8 @@ use ui::design::component::icon::Icon;
 use ui::design::component::image::Image;
 use ui::design::component::list::ListItem;
 use ui::design::component::menu::Menu;
+use ui::design::component::segmented_button::SegmentedButton;
+use ui::design::component::segmented_button::SegmentedButtonType;
 use ui::design::component::text::Text;
 use ui::design::reference;
 use ui::foundation::column::Column;
@@ -34,39 +38,38 @@ pub fn HomeScreen() -> Element {
             let credentials_repository = create_credentials_repository();
 
             if let Some(access_token) = credentials_repository.get_access_token() {
-                let profile_repository = create_profile_repository(access_token.clone());
-
                 // TODO Fake
-                // return HomeState::Success(Profile {
-                //     id: 1,
-                //     name: "Michael Kayne".to_string(),
-                //     given_name: "".to_string(),
-                //     family_name: "".to_string(),
-                //     email: "michael.kayne@example.com".to_string(),
-                //     verified_user: false,
-                //     verified_email: false,
-                //     networks: vec![
-                //         Network {
-                //             perms: 3,
-                //             asn: 65001,
-                //             name: "AT&T".to_string(),
-                //             id: 101,
-                //         },
-                //         Network {
-                //             perms: 5,
-                //             asn: 65002,
-                //             name: "Verizon Communications".to_string(),
-                //             id: 102,
-                //         },
-                //         Network {
-                //             perms: 2,
-                //             asn: 65003,
-                //             name: "T-Mobile USA".to_string(),
-                //             id: 103,
-                //         },
-                //     ],
-                // });
+                return HomeState::Success(Profile {
+                    id: 1,
+                    name: "Michael Kayne".to_string(),
+                    given_name: "".to_string(),
+                    family_name: "".to_string(),
+                    email: "michael.kayne@example.com".to_string(),
+                    verified_user: false,
+                    verified_email: false,
+                    networks: vec![
+                        Network {
+                            perms: 3,
+                            asn: 65001,
+                            name: "AT&T".to_string(),
+                            id: 101,
+                        },
+                        Network {
+                            perms: 5,
+                            asn: 65002,
+                            name: "Verizon Communications".to_string(),
+                            id: 102,
+                        },
+                        Network {
+                            perms: 2,
+                            asn: 65003,
+                            name: "T-Mobile USA".to_string(),
+                            id: 103,
+                        },
+                    ],
+                });
 
+                let profile_repository = create_profile_repository(access_token.clone());
                 match profile_repository.get(access_token.clone()).await {
                     Ok(profile) => return HomeState::Success(profile),
                     Err(_) => {}
@@ -360,15 +363,38 @@ fn Traffic() -> Element {
 
 #[component]
 fn Bandwidth() -> Element {
+    let mut is_bits = use_signal(|| true );
+
     rsx! {
         Column {
-            class: "bg-white w-full border border-gray-300 rounded-lg shadow-lg p-4",
+            class: "flex bg-white w-full border border-gray-300 rounded-lg shadow-lg p-2",
             horizontal_alignment: Alignment::Start,
             vertical_arrangement: Arrangement::Start,
 
-            Text {
-                class: "font-semibold",
-                text: "Bandwidth"
+            Row {
+                class: "flex w-full",
+
+                Text {
+                    class: "font-semibold p-2 flex-grow",
+                    text: "Bandwidth"
+                }
+
+                Row {
+                    SegmentedButton {
+                        selected: is_bits(),
+                        label: "Bits",
+                        segment_type: SegmentedButtonType::Start,
+                        on_click: move |_| is_bits.set(true),
+                    }
+
+                    SegmentedButton {
+                        selected: !is_bits(),
+                        label: "Packets",
+                        segment_type: SegmentedButtonType::End,
+                        on_click: move |_| is_bits.set(false),
+
+                    }
+                }
             }
         }
     }
@@ -427,38 +453,6 @@ fn Locations(data: Vec<PeerData>) -> Element {
                        }
                     }
                 }
-            }
-        }
-    }
-}
-
-#[component]
-fn LocationsHeader() -> Element {
-    rsx! {
-        Row {
-            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-4",
-            horizontal_arrangement: Arrangement::Start,
-            vertical_alignment: Alignment::Start,
-
-            Text {
-               class: "font-medium",
-               text: "Name"
-            }
-        }
-    }
-}
-
-#[component]
-fn LocationsRow() -> Element {
-    rsx! {
-        Column {
-            class: "col-span-3 bg-white w-full h-[300px] border border-gray-300 rounded-lg shadow-lg p-4",
-            horizontal_alignment: Alignment::Start,
-            vertical_arrangement: Arrangement::Start,
-
-            Text {
-               class: "font-semibold",
-               text: "Locations"
             }
         }
     }

@@ -22,6 +22,7 @@ pub mod navigation;
 pub mod progress_indicator;
 pub mod radio_button;
 pub mod scaffold;
+pub mod segmented_button;
 pub mod sheet;
 pub mod slider;
 pub mod snackbar;

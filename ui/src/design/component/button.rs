@@ -57,13 +57,11 @@ pub fn Button(props: ButtonProps) -> Element {
 
     rsx! {
         button {
-        class: "{props.class} px-3 py-2 rounded-lg flex items-center gap-1 hover:bg-gray-200 active:bg-gray-300 cursor-pointer font-semibold",
-            // Events
+        class: "px-3 py-2 text-gray-600 rounded-lg flex items-center gap-1 hover:bg-gray-200 active:bg-gray-300 cursor-pointer font-semibold {props.class}",
             onclick: on_click,
             onmouseenter: move |data| props.on_mouse_enter.call(data),
             onmouseleave: move |data| props.on_mouse_leave.call(data),
             onfocus: move |data| props.on_focus.call(data),
-            // Aria
             aria_pressed: aria_pressed_val,
             aria_label: aria_label_val,
 
@@ -77,7 +75,7 @@ pub fn Button(props: ButtonProps) -> Element {
             }
 
             Text {
-                class: "align-middle text-gray-600",
+                class: "align-middle",
                 text: props.label
             }
 
