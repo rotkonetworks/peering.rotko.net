@@ -1,5 +1,5 @@
 use std::env;
-use crate::data::profile::Profile;
+use crate::data::profile::{Network, Profile};
 use reqwest::Client;
 use std::error::Error;
 use dioxus::prelude::*;
@@ -18,6 +18,40 @@ impl ProfileDataSource {
     }
 
     pub async fn get(&self, access_token: String) -> Result<Profile, Box<dyn Error>> {
+
+        // TODO Fake
+        let fake_profile = Profile {
+            id: 1,
+            name: "Michael Kayne".to_string(),
+            given_name: "".to_string(),
+            family_name: "".to_string(),
+            email: "michael.kayne@example.com".to_string(),
+            verified_user: false,
+            verified_email: false,
+            networks: vec![
+                Network {
+                    perms: 3,
+                    asn: 65001,
+                    name: "AT&T".to_string(),
+                    id: 101,
+                },
+                Network {
+                    perms: 5,
+                    asn: 65002,
+                    name: "Verizon Communications".to_string(),
+                    id: 102,
+                },
+                Network {
+                    perms: 2,
+                    asn: 65003,
+                    name: "T-Mobile USA".to_string(),
+                    id: 103,
+                },
+            ],
+        };
+
+        return Ok(fake_profile);
+
         get_profile(access_token.into())
             .await
             .map_err(|e| Box::<dyn Error>::from(e.to_string()))

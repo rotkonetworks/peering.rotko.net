@@ -51,6 +51,7 @@ pub fn LoginScreen(code: String, state: String) -> Element {
                     return match result {
                         Ok(response) => {
                             credentials_repository.set_access_token(&response.access_token);
+                            credentials_repository.set_refresh_token(&response.refresh_token);
 
                             navigator.replace(Route::HomeScreen {});
 

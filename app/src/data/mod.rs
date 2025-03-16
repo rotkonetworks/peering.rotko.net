@@ -7,6 +7,9 @@ use crate::data::profile_repository::ProfileRepository;
 use reqwest::header::{HeaderMap, HeaderValue};
 use reqwest::Client;
 use web_sys::{window, Storage};
+use crate::data::location_data_source::LocationDataSource;
+use crate::data::location_repository::LocationRepository;
+
 pub mod auth;
 mod auth_data_source;
 pub mod auth_repository;
@@ -15,6 +18,10 @@ mod credentials_repository;
 pub mod profile;
 mod profile_data_source;
 mod profile_repository;
+pub mod location;
+mod location_data_source;
+pub mod location_repository;
+mod traffic_data;
 
 fn create_storage() -> Storage {
     window()
@@ -51,4 +58,10 @@ pub fn create_profile_repository(access_token: String) -> ProfileRepository {
     let client = create_client(Some(access_token));
     let data_source = ProfileDataSource::new(client);
     ProfileRepository::new(data_source)
+}
+
+pub fn create_location_repository(access_token: String) -> LocationRepository {
+    let client = create_client(Some(access_token));
+    let data_source = LocationDataSource::new(client);
+    LocationRepository::new(data_source)
 }
