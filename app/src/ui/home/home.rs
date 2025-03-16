@@ -1,10 +1,15 @@
+use crate::data::location::Location;
 use crate::data::profile::{Network, Profile};
-use crate::data::{create_credentials_repository, create_profile_repository};
+use crate::data::{
+    create_credentials_repository, create_location_repository, create_profile_repository,
+};
+use crate::ui::app::app::Route::BandwidthScreen;
 use dioxus::html::option::selected;
 use dioxus::prelude::*;
 use dioxus_charts::charts::pie::LabelPosition;
-use dioxus_charts::PieChart;
+use dioxus_charts::{LineChart, PieChart};
 use dioxus_material::IconKind::Segment;
+use futures::try_join;
 use std::ops::Deref;
 use ui::design::component::app_bar::TopAppBar;
 use ui::design::component::button::{Button, IconButton};
@@ -24,7 +29,7 @@ use ui::foundation::{Alignment, Arrangement};
 #[derive(Clone, PartialEq)]
 enum HomeState {
     Loading,
-    Success(Profile),
+    Success(Profile, Vec<Location>, Vec<f32>),
     Error,
 }
 
@@ -38,42 +43,20 @@ pub fn HomeScreen() -> Element {
             let credentials_repository = create_credentials_repository();
 
             if let Some(access_token) = credentials_repository.get_access_token() {
-                // TODO Fake
-                return HomeState::Success(Profile {
-                    id: 1,
-                    name: "Michael Kayne".to_string(),
-                    given_name: "".to_string(),
-                    family_name: "".to_string(),
-                    email: "michael.kayne@example.com".to_string(),
-                    verified_user: false,
-                    verified_email: false,
-                    networks: vec![
-                        Network {
-                            perms: 3,
-                            asn: 65001,
-                            name: "AT&T".to_string(),
-                            id: 101,
-                        },
-                        Network {
-                            perms: 5,
-                            asn: 65002,
-                            name: "Verizon Communications".to_string(),
-                            id: 102,
-                        },
-                        Network {
-                            perms: 2,
-                            asn: 65003,
-                            name: "T-Mobile USA".to_string(),
-                            id: 103,
-                        },
-                    ],
-                });
-
                 let profile_repository = create_profile_repository(access_token.clone());
-                match profile_repository.get(access_token.clone()).await {
-                    Ok(profile) => return HomeState::Success(profile),
-                    Err(_) => {}
-                }
+                let location_repository = create_location_repository(access_token.clone());
+
+                let traffic_data: Vec<f32> = vec![10.0, 2.0];
+
+                return match try_join!(
+                    profile_repository.get(access_token.clone()),
+                    location_repository.get(access_token.clone())
+                ) {
+                    Ok((profile, locations)) => {
+                        HomeState::Success(profile, locations, traffic_data)
+                    }
+                    Err(_) => HomeState::Error, // Handle failure case
+                };
             }
 
             let navigator = navigator();
@@ -84,8 +67,14 @@ pub fn HomeScreen() -> Element {
 
     rsx! {
         match home_state.read().deref() {
-            Some(HomeState::Success(profile)) => {
-                rsx! { Success { profile: profile.clone() } }
+            Some(HomeState::Success(profile, locations, traffic_data)) => {
+                rsx! {
+                    Success {
+                        profile: profile.clone(),
+                        locations: locations.clone(),
+                        traffic_data: traffic_data.clone()
+                    }
+                }
             },
             _ => {
                 let message = match home_state.read().deref() {
@@ -126,7 +115,7 @@ fn State(message: String) -> Element {
 }
 
 #[component]
-fn Success(profile: Profile) -> Element {
+fn Success(profile: Profile, locations: Vec<Location>, traffic_data: Vec<f32>) -> Element {
     let user_name = &profile.name;
 
     let mut selected_network = use_signal(|| profile.networks.first().cloned());
@@ -184,7 +173,6 @@ fn Success(profile: Profile) -> Element {
                             }
                         }
 
-
                         IconButton {
                             icon: Icon {
                                 width: 24,
@@ -195,6 +183,7 @@ fn Success(profile: Profile) -> Element {
                             on_click: move |_| {
                                 let credentials_repository = create_credentials_repository();
                                 credentials_repository.delete_access_token();
+                                credentials_repository.delete_refresh_token();
                                 let navigator = navigator();
                                 navigator.replace("/login");
                             }
@@ -211,38 +200,11 @@ fn Success(profile: Profile) -> Element {
 
                     Greeting { user_name: user_name }
 
-                    Traffic {}
+                    Traffic { data: traffic_data}
 
                     Bandwidth {}
 
-                    Locations {
-                        data: vec![
-                            PeerData {
-                                name: "Peer 1".to_string(),
-                                rotko_ip: "192.168.1.1".to_string(),
-                                peer_ip: "10.0.0.1".to_string(),
-                                prefix_sent: "192.168.1.0/24".to_string(),
-                                prefix_received: "10.0.0.0/24".to_string(),
-                                session_established: "Yes".to_string(),
-                            },
-                            PeerData {
-                                name: "Peer 2".to_string(),
-                                rotko_ip: "192.168.2.1".to_string(),
-                                peer_ip: "10.0.1.1".to_string(),
-                                prefix_sent: "192.168.2.0/24".to_string(),
-                                prefix_received: "10.0.1.0/24".to_string(),
-                                session_established: "No".to_string(),
-                            },
-                            PeerData {
-                                name: "Peer 3".to_string(),
-                                rotko_ip: "192.168.3.1".to_string(),
-                                peer_ip: "10.0.2.1".to_string(),
-                                prefix_sent: "192.168.3.0/24".to_string(),
-                                prefix_received: "10.0.2.0/24".to_string(),
-                                session_established: "Yes".to_string(),
-                            },
-                        ]
-                    }
+                    Locations { data: locations }
                 }
             }
         }
@@ -278,11 +240,10 @@ fn Greeting(user_name: String) -> Element {
 }
 
 #[component]
-fn Traffic() -> Element {
-    let values: Vec<f32> = vec![10.0, 2.0];
-    let total: f32 = values.iter().sum();
+fn Traffic(data: Vec<f32>) -> Element {
+    let total: f32 = data.iter().sum();
 
-    let percentages: Vec<String> = values
+    let percentages: Vec<String> = data
         .iter()
         .map(|&v| format!("{:.1}%", (v / total) * 100.0))
         .collect();
@@ -310,7 +271,7 @@ fn Traffic() -> Element {
                     donut: true,
                     donut_width: 30.0,
                     padding: 20.0,
-                    series: values.clone(),
+                    series: data.clone(),
                     labels: vec!["".into(), "".into()],
                 }
 
@@ -344,17 +305,17 @@ fn Traffic() -> Element {
                  vertical_alignment: Alignment::Center,
 
                  div {
-                    class: "w-3 h-3 bg-red-800 rounded-sm m-1",
+                     class: "w-3 h-3 bg-red-800 rounded-sm m-1",
                  }
 
                  Text {
-                   class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
-                   text: "To Rotko"
+                     class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
+                     text: "To Rotko"
                  }
 
                  Text {
-                   class: "text-sm font-medium text-gray-700 py-2 mx-1",
-                   text: percentages.last().cloned().unwrap_or_else(|| "".into()),
+                     class: "text-sm font-medium text-gray-700 py-2 mx-1",
+                     text: percentages.last().cloned().unwrap_or_else(|| "".into()),
                  }
             }
         }
@@ -363,7 +324,29 @@ fn Traffic() -> Element {
 
 #[component]
 fn Bandwidth() -> Element {
-    let mut is_bits = use_signal(|| true );
+    let mut is_bits = use_signal(|| true);
+
+    let series = vec![
+        vec![
+            1.12, 1.05, 1.08, 1.02, 0.95, 0.98, 0.90, 0.85, 0.50, 0.82, 1.00, 1.10, 1.15, 1.12,
+            1.08, 1.05, 1.00, 0.98, 0.92, 0.85, 0.78, 0.72, 0.68, 0.60,
+        ],
+        vec![
+            1.00, 0.98, 0.95, 0.92, 0.90, 0.85, 0.80, 0.75, 0.78, 0.60, 0.75, 0.88, 0.92, 1.00,
+            1.05, 1.08, 1.10, 1.12, 1.08, 1.02, 0.95, 0.90, 0.85, 0.80,
+        ],
+    ];
+
+    let labels: Vec<String> = (0..24)
+        .rev()
+        .map(|h| {
+            if h % 4 == 0 {
+                format!("{:02} {}", h % 12 + 1, if h >= 12 { "PM" } else { "AM" })
+            } else {
+                "".into()
+            }
+        })
+        .collect();
 
     rsx! {
         Column {
@@ -375,8 +358,12 @@ fn Bandwidth() -> Element {
                 class: "flex w-full",
 
                 Text {
-                    class: "font-semibold p-2 flex-grow",
-                    text: "Bandwidth"
+                    class: "font-semibold p-2 flex-grow cursor-pointer",
+                    text: "Bandwidth",
+                    on_click: move |_| {
+                        let navigator = navigator();
+                        navigator.push("/bandwidth");
+                    }
                 }
 
                 Row {
@@ -392,26 +379,66 @@ fn Bandwidth() -> Element {
                         label: "Packets",
                         segment_type: SegmentedButtonType::End,
                         on_click: move |_| is_bits.set(false),
-
                     }
                 }
+            }
+
+            div {
+                class: "relative flex items-center justify-center py-4",
+
+                LineChart {
+                    width: "100%",
+                    height: "100%",
+                    viewbox_width: 600,
+                    viewbox_height: 290,
+                    padding_top: 30,
+                    padding_left: 50,
+                    padding_right: 90,
+                    padding_bottom: 30,
+                    show_line_labels: false,
+                    show_grid: false,
+                    show_dotted_grid: false,
+                    show_grid_ticks: false,
+                    show_dots: false,
+                    label_interpolation: (|v| format!("{:.1}", v)) as fn(f32) -> String,
+                    series: series,
+                    labels: labels,
+                }
+            }
+
+             Row {
+                class: "flex w-full",
+                vertical_alignment: Alignment::Center,
+
+                div {
+                    class: "w-3 h-3 bg-red-500 rounded-sm m-1",
+                }
+
+                Text {
+                    class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
+                    text: "From Rotko"
+                }
+            }
+
+            Row {
+                 class: "flex w-full",
+                 vertical_alignment: Alignment::Center,
+
+                 div {
+                     class: "w-3 h-3 bg-red-800 rounded-sm m-1",
+                 }
+
+                 Text {
+                     class: "text-sm font-medium text-gray-700 py-2 mx-1 flex-grow",
+                     text: "To Rotko"
+                 }
             }
         }
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
-struct PeerData {
-    name: String,
-    rotko_ip: String,
-    peer_ip: String,
-    prefix_sent: String,
-    prefix_received: String,
-    session_established: String,
-}
-
 #[component]
-fn Locations(data: Vec<PeerData>) -> Element {
+fn Locations(data: Vec<Location>) -> Element {
     rsx! {
         Column {
             class: "col-span-3 bg-white w-full min-h-[260px] border border-gray-300 rounded-lg shadow-lg p-4",
@@ -431,26 +458,26 @@ fn Locations(data: Vec<PeerData>) -> Element {
                     thead {
                         class: "bg-gray-200",
                         tr {
-                            th { class: "border border-gray-300 px-4 py-2", "Name" }
+                            th { class: "text-left min-w-[200px] border border-gray-300 px-4 py-2", "Name" }
                             th { class: "border border-gray-300 px-4 py-2", "Rotko IP Address" }
                             th { class: "border border-gray-300 px-4 py-2", "Peer IP Address" }
-                            th { class: "border border-gray-300 px-4 py-2", "Prefix Sent to Peer" }
-                            th { class: "border border-gray-300 px-4 py-2", "Prefix Received from Peer" }
-                            th { class: "border border-gray-300 px-4 py-2", "Session Established" }
+                            th { class: "w-[140px] border border-gray-300 px-4 py-2", "Prefix Sent to Peer" }
+                            th { class: "w-[140px] border border-gray-300 px-4 py-2", "Prefix Received from Peer" }
+                            th { class: "w-max-[140px] border border-gray-300 px-4 py-2", "Session Established" }
                         }
                     }
 
                     tbody {
-                       for peer in data {
+                        for peer in data {
                             tr {
                                 td { class: "border border-gray-300 px-4 py-2", "{peer.name}" }
-                                td { class: "border border-gray-300 px-4 py-2", "{peer.rotko_ip}" }
-                                td { class: "border border-gray-300 px-4 py-2", "{peer.peer_ip}" }
-                                td { class: "border border-gray-300 px-4 py-2", "{peer.prefix_sent}" }
-                                td { class: "border border-gray-300 px-4 py-2", "{peer.prefix_received}" }
-                                td { class: "border border-gray-300 px-4 py-2", "{peer.session_established}" }
+                                td { class: "text-center border border-gray-300 px-4 py-2", "{peer.rotko_ip}" }
+                                td { class: "text-center border border-gray-300 px-4 py-2", "{peer.peer_ip}" }
+                                td { class: "text-center border border-gray-300 px-4 py-2", "{peer.prefix_sent}" }
+                                td { class: "text-center border border-gray-300 px-4 py-2", "{peer.prefix_received}" }
+                                td { class: "text-center border border-gray-300 px-4 py-2", "{peer.session_established}" }
                             }
-                       }
+                        }
                     }
                 }
             }

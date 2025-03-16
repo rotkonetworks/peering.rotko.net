@@ -2127,6 +2127,7 @@ dependencies = [
  "dioxus-charts",
  "dioxus-logger 0.6.2",
  "dioxus-material",
+ "futures",
  "manganis",
  "reqwest",
  "serde",

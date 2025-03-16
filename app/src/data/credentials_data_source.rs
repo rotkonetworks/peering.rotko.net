@@ -4,6 +4,7 @@ const OAUTH_STATE_KEY: &str = "oauth_state";
 const OAUTH_CODE_VERIFIER_KEY: &str = "oauth_code_verifier";
 
 const ACCESS_TOKEN_KEY: &str = "access_token";
+const REFRESH_TOKEN_KEY: &str = "refresh_token";
 
 pub struct CredentialsDataSource {
     storage: Storage,
@@ -43,5 +44,17 @@ impl CredentialsDataSource {
 
     pub fn delete_access_token(&self) {
         let _ = self.storage.remove_item(ACCESS_TOKEN_KEY);
+    }
+
+    pub fn get_refresh_token(&self) -> Option<String> {
+        self.storage.get_item(REFRESH_TOKEN_KEY).ok().flatten()
+    }
+
+    pub fn set_refresh_token(&self, value: &str) {
+        let _ = self.storage.set_item(REFRESH_TOKEN_KEY, value);
+    }
+
+    pub fn delete_refresh_token(&self) {
+        let _ = self.storage.remove_item(REFRESH_TOKEN_KEY);
     }
 }

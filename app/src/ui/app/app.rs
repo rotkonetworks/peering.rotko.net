@@ -1,5 +1,6 @@
 use crate::ui::auth::login::LoginScreen;
 use crate::ui::home::home::HomeScreen;
+use crate::ui::bandwidth::bandwidth::BandwidthScreen;
 use dioxus::core_macro::{component, rsx};
 use dioxus::dioxus_core::Element;
 use dioxus::document;
@@ -32,4 +33,7 @@ pub enum Route {
         code: String,
         state: String
     },
+
+    #[route("/bandwidth")]
+    BandwidthScreen {},
 }
